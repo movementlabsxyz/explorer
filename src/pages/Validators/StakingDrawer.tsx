@@ -21,7 +21,7 @@ const faqStakingData = [
     question: "What is delegated staking?",
     answer: (
       <React.Fragment>
-        As an MOVE holder, you can 'delegate' your MOVE to a delegation pool.
+        As a MOVE holder, you can 'delegate' your MOVE to a delegation pool.
         The total delegation pool is an aggregation of staked MOVE from various
         token owners, and collectively staked. Movement is a proof-of-stake
         network, which means that tokens are staked to{" "}
@@ -62,7 +62,7 @@ const faqStakingData = [
             that you’d like to stake your MOVEs to.
           </li>
           <li>
-            In the validator detail page, click “Stake” to starting staking MOVE
+            In the validator detail page, click “Stake” to start staking MOVE
             with this validator.
           </li>
           <li>

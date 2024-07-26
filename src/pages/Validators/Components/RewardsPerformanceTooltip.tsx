@@ -13,7 +13,7 @@ export default function RewardsPerformanceTooltip() {
           validator based upon proposal success.
         </TooltipTypography>
         <TooltipTypography variant="body2">
-          It is calculated as a % of reward earned by the validator out of the
+          It is calculated as a % of the reward earned by the validator out of the
           maximum reward earning opportunity:
         </TooltipTypography>
         <CodeLineBox

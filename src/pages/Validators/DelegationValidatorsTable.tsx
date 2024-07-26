@@ -453,7 +453,7 @@ export function DelegationValidatorsTable() {
 
   useEffect(() => {
     if (!loading) {
-      // delegated staking pools that are in validators list, meaning that they are either active or once active now inactive
+      // delegated staking pools that are in the validators list, meaning that they are either active or once active now inactive
       const validatorsInDelegatedStakingPools: ValidatorData[] =
         validators.filter((validator) => {
           return delegatedStakingPools.some(
@@ -461,7 +461,7 @@ export function DelegationValidatorsTable() {
           );
         });
 
-      // delegated staking pools that are not in validators list, meaning that they were never active
+      // delegated staking pools that are not in the validators list, meaning that they were never active
       const delegatedStakingPoolsNotInValidators: ValidatorData[] =
         delegatedStakingPools
           .filter((pool) => {

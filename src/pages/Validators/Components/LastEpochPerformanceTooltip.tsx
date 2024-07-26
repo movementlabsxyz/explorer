@@ -28,7 +28,7 @@ export default function LastEpochPerformanceTooltip() {
           opportunities)
         </CodeLineBox>
         <TooltipTypography variant="body2">
-          This metric gives you an early indicator if performance is degrading.
+          This metric gives you an early indicator that performance is degrading.
         </TooltipTypography>
       </Stack>
     </TableTooltip>
