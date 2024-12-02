@@ -255,6 +255,16 @@ function UserTransactionRow({
     return null;
   }
 
+  // If the transaction has a linker erroor and failed, don't show it in the table
+  if (
+    "vm_status" in transaction &&
+    transaction?.vm_status === "LINKER_ERROR" &&
+    "success" in transaction &&
+    transaction?.success == false
+  ) {
+    return null;
+  }
+
   return (
     <GeneralTableRow to={`/txn/${version}`}>
       {columns.map((column) => {
