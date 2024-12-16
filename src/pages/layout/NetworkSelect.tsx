@@ -17,6 +17,7 @@ import {
 import {NetworkName, networks} from "../../constants";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 import {grey} from "../../themes/colors/aptosColorPalette";
+import {useNavigate} from "../../routing";
 
 interface CustomParams {
   restUrl: string;
@@ -108,19 +109,22 @@ export default function NetworkSelect() {
   const [restUrl, setRestUrl] = React.useState("");
   // eslint-disable-next-line
   const [graphqlUrl, setGraphqlUrl] = React.useState("");
+  const navigate = useNavigate(); // Custom navigation hook
 
   const handleChange = (event: SelectChangeEvent<string>) => {
-    if (event.target.value == "custom") {
+    const selectedNetwork = event.target.value;
+
+    if (selectedNetwork === "custom") {
       if (
         verifyUrl(customParameters.restUrl) &&
         verifyUrl(customParameters.graphqlUrl)
       ) {
-        const network_name = event.target.value;
-        selectNetwork(network_name as NetworkName);
+        selectNetwork(selectedNetwork as NetworkName);
+        navigate(`/?network=custom`);
       }
     } else {
-      const network_name = event.target.value;
-      selectNetwork(network_name as NetworkName);
+      selectNetwork(selectedNetwork as NetworkName);
+      navigate(`/?network=${encodeURIComponent(selectedNetwork)}`);
     }
   };
 
