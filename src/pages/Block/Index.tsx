@@ -1,6 +1,7 @@
-import {useParams} from "react-router-dom";
-import {Stack, Grid, Alert} from "@mui/material";
 import React from "react";
+import {useParams} from "react-router-dom";
+import {Stack, Alert} from "@mui/material";
+import Box from "@mui/material/Box";
 import BlockTitle from "./Title";
 import BlockTabs from "./Tabs";
 import {useGetBlockByHeight} from "../../api/hooks/useGetBlock";
@@ -33,14 +34,23 @@ export default function BlockPage() {
   }
 
   return (
-    <Grid container spacing={1}>
-      <PageHeader />
-      <Grid item xs={12}>
-        <Stack direction="column" spacing={4} marginTop={2}>
-          <BlockTitle />
-          <BlockTabs data={data} />
-        </Stack>
-      </Grid>
-    </Grid>
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Box sx={{width: "86%"}}>
+          <PageHeader />
+          <Stack direction="column" spacing={4} marginTop={2}>
+            <BlockTitle />
+            <BlockTabs data={data} />
+          </Stack>
+        </Box>
+      </Box>
+    </Box>
   );
 }

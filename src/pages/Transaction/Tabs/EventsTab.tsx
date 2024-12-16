@@ -7,6 +7,8 @@ import useExpandedList from "../../../components/hooks/useExpandedList";
 import EmptyTabContent from "../../../components/IndividualPageContent/EmptyTabContent";
 import HashButton, {HashType} from "../../../components/HashButton";
 import JsonViewCard from "../../../components/IndividualPageContent/JsonViewCard";
+import GradientBorderBox from "../../../components/IndividualPageContent/GradientBorderBox";
+import {Box} from "@mui/material";
 
 type EventsTabProps = {
   transaction: Types.Transaction;
@@ -30,33 +32,53 @@ export default function EventsTab({transaction}: EventsTabProps) {
       collapseAll={collapseAll}
     >
       {events.map((event, i) => (
-        <CollapsibleCard
-          key={i}
-          titleKey="Index:"
-          titleValue={i.toString()}
-          expanded={expandedList[i]}
-          toggleExpanded={() => toggleExpandedAt(i)}
-        >
-          <ContentRow
-            title="Account Address:"
-            value={
-              <HashButton
-                hash={event.guid.account_address}
-                type={HashType.ACCOUNT}
-              />
-            }
-          />
-          <ContentRow
-            title="Creation Number:"
-            value={event.guid.creation_number}
-          />
-          <ContentRow title="Sequence Number:" value={event.sequence_number} />
-          <ContentRow title="Type:" value={event.type} />
-          <ContentRow
-            title="Data:"
-            value={<JsonViewCard data={event.data} />}
-          />
-        </CollapsibleCard>
+        <GradientBorderBox>
+          <CollapsibleCard
+            key={i}
+            titleKey="Index:"
+            titleValue={i.toString()}
+            expanded={expandedList[i]}
+            toggleExpanded={() => toggleExpandedAt(i)}
+            useCustomBackground={true}
+          >
+            <ContentRow
+              title="Account Address:"
+              titleColor="#fff"
+              value={
+                <Box
+                  sx={{
+                    "& .MuiLink-root": {
+                      color: "#FFD337 !important",
+                      "& span": {color: "#FFD337 !important"},
+                      "& button": {color: "#FFD337 !important"},
+                    },
+                  }}
+                >
+                  <HashButton
+                    hash={event.guid.account_address}
+                    type={HashType.ACCOUNT}
+                  />
+                </Box>
+              }
+            />
+            <ContentRow
+              title="Creation Number:"
+              titleColor="#fff"
+              value={event.guid.creation_number}
+            />
+            <ContentRow
+              title="Sequence Number:"
+              titleColor="#fff"
+              value={event.sequence_number}
+            />
+            <ContentRow title="Type:" titleColor="#fff" value={event.type} />
+            <ContentRow
+              title="Data:"
+              titleColor="#fff"
+              value={<JsonViewCard data={event.data} />}
+            />
+          </CollapsibleCard>
+        </GradientBorderBox>
       ))}
     </CollapsibleCards>
   );

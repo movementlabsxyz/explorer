@@ -4,6 +4,7 @@ import ContentRow from "../../../../components/IndividualPageContent/ContentRow"
 import {truncateAddress} from "../../../utils";
 import {Link} from "../../../../routing";
 import {AccountAddress} from "@aptos-labs/ts-sdk";
+import GradientBorderBox from "../../../../components/IndividualPageContent/GradientBorderBox";
 
 const AddressLink: React.FC<{
   address: string;
@@ -64,8 +65,10 @@ export const TransactionActions: React.FC<{transaction: Types.Transaction}> = ({
   }
 
   return (
-    <ContentBox>
-      <ContentRow title="Transaction Actions" value={<ol>{listItems}</ol>} />
-    </ContentBox>
+    <GradientBorderBox>
+      <ContentBox>
+        <ContentRow title="Transaction Actions" value={<ol>{listItems}</ol>} />
+      </ContentBox>
+    </GradientBorderBox>
   );
 };

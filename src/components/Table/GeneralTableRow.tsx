@@ -1,6 +1,5 @@
 import {PropsWithChildren} from "react";
 import {SxProps, TableRow, useTheme} from "@mui/material";
-import {grey} from "../../themes/colors/aptosColorPalette";
 import {Link} from "../../routing";
 
 export default function GeneralTableRow({
@@ -16,7 +15,6 @@ export default function GeneralTableRow({
     textDecoration: "none",
     cursor: clickDisabled ? undefined : "pointer",
     userSelect: "none",
-    backgroundColor: `${theme.palette.mode === "dark" ? grey[800] : grey[50]}`,
     "&:hover:not(:active)": clickDisabled
       ? undefined
       : {
@@ -32,6 +30,17 @@ export default function GeneralTableRow({
           background: theme.palette.neutralShade.main,
           transform: "translate(0,0.1rem)",
         },
+
+    "& > td:first-of-type": {
+      borderTopLeftRadius: "8px",
+      borderBottomLeftRadius: "18px",
+    },
+    "& > td:last-child": {
+      borderTopRightRadius: "24px",
+      borderBottomRightRadius: "4px",
+    },
+    marginBottom: "8px",
+    backgroundColor: "#151515BF",
   };
 
   if (to) {

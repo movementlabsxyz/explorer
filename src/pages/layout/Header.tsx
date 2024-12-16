@@ -113,8 +113,8 @@ export default function Header() {
               height: "5rem",
               color:
                 theme.palette.mode === "dark" ? grey[50] : "rgba(18,22,21,1)",
-              display: "flex", // Add this
-              alignItems: "center", // Add this
+              display: "flex",
+              alignItems: "center",
               justifyContent: "space-between",
             }}
             disableGutters

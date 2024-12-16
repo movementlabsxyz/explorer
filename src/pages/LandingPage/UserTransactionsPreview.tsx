@@ -20,7 +20,7 @@ export default function UserTransactionsPreview() {
 
   return (
     <>
-      <Stack spacing={2}>
+      <Stack spacing={2} alignItems="center">
         <Typography variant="h5">User Transactions</Typography>
         <Box sx={{width: "auto", overflowX: "auto"}}>
           <UserTransactionsTable versions={versions} />

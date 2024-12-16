@@ -1,6 +1,6 @@
-import {Box} from "@mui/material";
 import React from "react";
 import ContentBox from "./ContentBox";
+import GradientBorderBox from "./GradientBorderBox";
 
 type EmptyTabContentProps = {
   message?: React.ReactNode;
@@ -8,8 +8,8 @@ type EmptyTabContentProps = {
 
 export default function EmptyTabContent({message}: EmptyTabContentProps) {
   return (
-    <Box marginBottom={3}>
+    <GradientBorderBox>
       <ContentBox>{message ?? `No Data Found`}</ContentBox>
-    </Box>
+    </GradientBorderBox>
   );
 }

@@ -3,15 +3,30 @@ import HeaderSearch from "../layout/Search/Index";
 import Box from "@mui/material/Box";
 import NetworkInfo from "../Analytics/NetworkInfo/NetworkInfo";
 import UserTransactionsPreview from "./UserTransactionsPreview";
-
 export default function LandingPage() {
   return (
     <Box>
-      <Typography variant="h3" component="h3" marginBottom={4}>
-        Movement Explorer
-      </Typography>
-      <NetworkInfo isOnHomePage />
-      <HeaderSearch />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Box sx={{width: "86%"}}>
+          <Typography
+            variant="h4"
+            component="h4"
+            marginBottom={4}
+            marginTop={6}
+          >
+            Movement Explorer
+          </Typography>
+          <NetworkInfo isOnHomePage />
+          <HeaderSearch />
+        </Box>
+      </Box>
       <UserTransactionsPreview />
     </Box>
   );

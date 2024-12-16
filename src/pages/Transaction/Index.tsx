@@ -1,4 +1,4 @@
-import {Stack, Grid, Alert} from "@mui/material";
+import {Stack, Grid, Alert, Box} from "@mui/material";
 import {Types} from "aptos";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 import {useParams} from "react-router-dom";
@@ -41,13 +41,24 @@ export default function TransactionPage() {
 
   return (
     <Grid container>
-      <PageHeader />
-      <Grid item xs={12}>
-        <Stack direction="column" spacing={4} marginTop={2}>
-          <TransactionTitle transaction={data} />
-          <TransactionTabs transaction={data} />
-        </Stack>
-      </Grid>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          width: "100%",
+        }}
+      >
+        <Box sx={{width: "86%"}}>
+          <PageHeader />
+          <Grid item xs={12}>
+            <Stack direction="column" spacing={4} marginTop={2}>
+              <TransactionTitle transaction={data} />
+              <TransactionTabs transaction={data} />
+            </Stack>
+          </Grid>
+        </Box>
+      </Box>
     </Grid>
   );
 }

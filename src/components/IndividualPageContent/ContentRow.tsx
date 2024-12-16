@@ -9,6 +9,7 @@ type ContentRowProps = {
   value: React.ReactNode;
   tooltip?: React.ReactNode;
   i?: any;
+  titleColor?: string;
 };
 
 export default function ContentRow({
@@ -16,6 +17,7 @@ export default function ContentRow({
   value,
   tooltip,
   i,
+  titleColor = grey[450],
 }: ContentRowProps) {
   return (
     <Box>
@@ -27,7 +29,7 @@ export default function ContentRow({
         key={i}
       >
         <Grid xs={12} sm={3}>
-          <Box sx={{fontSize: "0.875rem", color: grey[450]}}>
+          <Box sx={{fontSize: "0.875rem", color: titleColor}}>
             {title}
             <Box
               component="span"

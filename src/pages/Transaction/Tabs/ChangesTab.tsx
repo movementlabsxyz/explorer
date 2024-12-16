@@ -12,6 +12,8 @@ import {
   objectCoreAddress,
   tokenV2Address,
 } from "../../../constants";
+import GradientBorderBox from "../../../components/IndividualPageContent/GradientBorderBox";
+import {Box} from "@mui/material";
 
 type ChangesTabProps = {
   transaction: Types.Transaction;
@@ -35,50 +37,79 @@ export default function ChangesTab({transaction}: ChangesTabProps) {
       collapseAll={collapseAll}
     >
       {changes.map((change, i) => (
-        <CollapsibleCard
-          key={i}
-          titleKey="Index:"
-          titleValue={i.toString()}
-          expanded={expandedList[i]}
-          toggleExpanded={() => toggleExpandedAt(i)}
-        >
-          <ContentRow title="Type:" value={change.type} />
-          {"address" in change && (
+        <GradientBorderBox>
+          <CollapsibleCard
+            key={i}
+            titleKey="Index:"
+            titleValue={i.toString()}
+            expanded={expandedList[i]}
+            toggleExpanded={() => toggleExpandedAt(i)}
+            useCustomBackground={true}
+          >
+            <ContentRow titleColor="#fff" title="Type:" value={change.type} />
+            {"address" in change && (
+              <ContentRow
+                title="Address:"
+                titleColor="#fff"
+                value={
+                  <Box
+                    sx={{
+                      "& .MuiLink-root": {
+                        color: "#FFD337 !important",
+                        "& span": {color: "#FFD337 !important"},
+                        "& button": {color: "#FFD337 !important"},
+                      },
+                    }}
+                  >
+                    <HashButton
+                      hash={change.address}
+                      type={
+                        "data" in change &&
+                        "type" in change.data &&
+                        [
+                          objectCoreAddress,
+                          tokenV2Address,
+                          collectionV2Address,
+                        ].includes(change.data.type)
+                          ? HashType.OBJECT
+                          : HashType.ACCOUNT
+                      }
+                    />
+                  </Box>
+                }
+              />
+            )}
             <ContentRow
-              title="Address:"
-              value={
-                <HashButton
-                  hash={change.address}
-                  type={
-                    "data" in change &&
-                    "type" in change.data &&
-                    [
-                      objectCoreAddress,
-                      tokenV2Address,
-                      collectionV2Address,
-                    ].includes(change.data.type)
-                      ? HashType.OBJECT
-                      : HashType.ACCOUNT
-                  }
-                />
-              }
+              titleColor="#fff"
+              title="State Key Hash:"
+              value={change.state_key_hash}
             />
-          )}
-          <ContentRow title="State Key Hash:" value={change.state_key_hash} />
-          {"data" in change && change.data && (
-            <ContentRow
-              title="Data:"
-              value={<JsonViewCard data={change.data} />}
-            />
-          )}
-          {"handle" in change && (
-            <ContentRow title="Handle:" value={change.handle} />
-          )}
-          {"key" in change && <ContentRow title="Key:" value={change.key} />}
-          {"value" in change && (
-            <ContentRow title="Value:" value={change.value} />
-          )}
-        </CollapsibleCard>
+            {"data" in change && change.data && (
+              <ContentRow
+                title="Data:"
+                titleColor="#fff"
+                value={<JsonViewCard data={change.data} />}
+              />
+            )}
+            {"handle" in change && (
+              <ContentRow
+                titleColor="#fff"
+                title="Handle:"
+                value={change.handle}
+              />
+            )}
+            {"key" in change && (
+              <ContentRow titleColor="#fff" title="Key:" value={change.key} />
+            )}
+            {"value" in change && (
+              <ContentRow
+                titleColor="#fff"
+                title="Value:"
+                value={change.value}
+              />
+            )}
+          </CollapsibleCard>
+        </GradientBorderBox>
       ))}
     </CollapsibleCards>
   );

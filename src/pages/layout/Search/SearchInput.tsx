@@ -20,7 +20,26 @@ export default function SearchInput({loading, ...params}: SearchInputProps) {
           sx: {
             fontSize: "1.1rem",
             lineHeight: "1.1rem",
+            borderRadius: "8px 16px 4px 18px",
+            backgroundColor: "#151515BF",
+            border: "1px solid #FFD337",
+            "& fieldset": {
+              border: "none",
+            },
+            height: 45,
+            "& input::placeholder": {
+              color: "#FFFFFF",
+              opacity: 1,
+            },
+            "& input::-moz-placeholder": {
+              color: "#FFFFFF",
+              opacity: 1,
+            },
+            "& input:-ms-input-placeholder": {
+              color: "#FFFFFF",
+            },
           },
+
           "aria-label": "search",
           ...params.InputProps,
           startAdornment: (

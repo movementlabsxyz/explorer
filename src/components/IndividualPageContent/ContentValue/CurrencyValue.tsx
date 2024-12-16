@@ -57,6 +57,7 @@ type CurrencyValueProps = {
   decimals?: number;
   fixedDecimalPlaces?: number;
   currencyCode?: string | React.ReactNode;
+  color?: string;
 };
 
 export default function CurrencyValue({
@@ -64,16 +65,17 @@ export default function CurrencyValue({
   decimals,
   fixedDecimalPlaces,
   currencyCode,
+  color,
 }: CurrencyValueProps) {
   const number = getFormattedBalanceStr(amount, decimals, fixedDecimalPlaces);
   if (currencyCode) {
     return (
-      <span>
+      <span style={{color}}>
         {number} {currencyCode}
       </span>
     );
   } else {
-    return <span>{number}</span>;
+    return <span style={{color}}>{number}</span>;
   }
 }
 
@@ -81,6 +83,7 @@ export function APTCurrencyValue({
   amount: amountStr,
   decimals,
   fixedDecimalPlaces,
+  color,
 }: CurrencyValueProps) {
   // remove leading "-" when it's a negative number
   let amount = amountStr;
@@ -92,6 +95,7 @@ export function APTCurrencyValue({
     <CurrencyValue
       {...{amount, decimals, fixedDecimalPlaces}}
       currencyCode="MOVE"
+      color={color}
     />
   );
 }

@@ -2,6 +2,7 @@ import React, {useEffect, useState} from "react";
 import {Autocomplete} from "@mui/material";
 import SearchInput from "./SearchInput";
 import ResultLink from "./ResultLink";
+
 import {
   useAugmentToWithGlobalSearchParams,
   useNavigate,

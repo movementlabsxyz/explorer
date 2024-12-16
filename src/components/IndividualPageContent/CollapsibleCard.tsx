@@ -10,6 +10,7 @@ type CollapsibleCardProps = {
   children: React.ReactNode;
   expanded: boolean;
   toggleExpanded: () => void;
+  useCustomBackground?: boolean;
 };
 
 export default function CollapsibleCard({
@@ -18,14 +19,22 @@ export default function CollapsibleCard({
   titleValue,
   children,
   toggleExpanded,
+  useCustomBackground = false,
   ...props
 }: CollapsibleCardProps) {
   const theme = useTheme();
   // TODO: unify colors for the new transaction page
-  const titleBackgroundColor =
-    theme.palette.mode === "dark" ? grey[700] : grey[100];
-  const contentBackgroundColor =
-    theme.palette.mode === "dark" ? grey[800] : grey[50];
+  const titleBackgroundColor = useCustomBackground
+    ? "transparent"
+    : theme.palette.mode === "dark"
+      ? grey[700]
+      : grey[100];
+  const contentBackgroundColor = useCustomBackground
+    ? "transparent"
+    : theme.palette.mode === "dark"
+      ? grey[800]
+      : grey[50];
+  const textColor = useCustomBackground ? "#fff" : grey[450];
 
   return (
     <Box {...props}>
@@ -33,7 +42,7 @@ export default function CollapsibleCard({
         paddingX={4}
         paddingY={2}
         sx={{
-          color: grey[450],
+          color: textColor,
           backgroundColor: titleBackgroundColor,
           borderRadius: expanded ? "0px 0px 0px 0px" : "0px 0px 0px 0px",
         }}
@@ -46,7 +55,7 @@ export default function CollapsibleCard({
           columnSpacing={4}
         >
           <Grid item md={3}>
-            <Typography variant="body2" color={grey[450]}>
+            <Typography variant="body2" color={textColor}>
               {titleKey}
             </Typography>
           </Grid>
@@ -76,6 +85,7 @@ export default function CollapsibleCard({
           sx={{
             backgroundColor: contentBackgroundColor,
             borderRadius: "0px 0px 0px 0px",
+            color: textColor,
           }}
         >
           <Stack direction="column" spacing={2}>

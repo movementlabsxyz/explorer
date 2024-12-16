@@ -83,7 +83,11 @@
     "postinstall": "husky install"
   },
   "lint-staged": {
-    "*": ["prettier --config .prettierrc.json -w", "eslint --fix"]
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --config .prettierrc.json -w"
+    ],
+    "*.{css,scss,md,json,html}": ["prettier --config .prettierrc.json -w"]
   },
   "browserslist": {
     "production": [">0.2%", "not dead", "not op_mini all"],

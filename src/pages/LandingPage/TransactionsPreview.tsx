@@ -36,7 +36,7 @@ export default function TransactionsPreview() {
 
   return (
     <>
-      <Stack spacing={2}>
+      <Stack spacing={2} alignItems="center">
         <Box sx={{width: "auto", overflowX: "auto"}}>
           <TransactionContent {...result} />
         </Box>
@@ -46,7 +46,14 @@ export default function TransactionsPreview() {
             component={RRD.Link}
             to={augmentTo("/transactions")}
             variant="primary"
-            sx={{margin: "0 auto", mt: 6}}
+            sx={{
+              margin: "0 auto",
+              mt: 6,
+              height: 40,
+              borderRadius: "8px 16px 4px 18px",
+              fontWeight: 700,
+              padding: "6px 17px",
+            }}
           >
             View all Transactions
           </Button>

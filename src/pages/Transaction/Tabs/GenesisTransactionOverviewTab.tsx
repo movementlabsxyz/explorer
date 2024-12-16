@@ -29,7 +29,7 @@ export default function GenesisTransactionOverviewTab({
           value={<TransactionStatus success={transactionData.success} />}
           tooltip={getLearnMoreTooltip("status")}
         />
-        <TransactionBlockRow version={transactionData.version} />
+        <TransactionBlockRow version={transactionData.version} color="" />
         <ContentRow
           title="VM Status:"
           value={transactionData.vm_status}

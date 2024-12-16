@@ -9,16 +9,11 @@ import BlockMetadataOverviewTab from "./Tabs/BlockMetadataOverviewTab";
 import StateCheckpointOverviewTab from "./Tabs/StateCheckpointOverviewTab";
 import PendingTransactionOverviewTab from "./Tabs/PendingTransactionOverviewTab";
 import GenesisTransactionOverviewTab from "./Tabs/GenesisTransactionOverviewTab";
-import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import EventsTab from "./Tabs/EventsTab";
 import PayloadTab from "./Tabs/PayloadTab";
 import ChangesTab from "./Tabs/ChangesTab";
 import UnknownTab from "./Tabs/UnknownTab";
-import BarChartOutlinedIcon from "@mui/icons-material/BarChartOutlined";
-import CallMergeOutlinedIcon from "@mui/icons-material/CallMergeOutlined";
-import FileCopyOutlinedIcon from "@mui/icons-material/FileCopyOutlined";
-import CodeOutlinedIcon from "@mui/icons-material/CodeOutlined";
-import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+
 import BalanceChangeTab from "./Tabs/BalanceChangeTab";
 import {useParams} from "react-router-dom";
 import {useNavigate} from "../../routing";
@@ -84,29 +79,6 @@ function getTabLabel(value: TabValue): string {
   }
 }
 
-function getTabIcon(value: TabValue): JSX.Element {
-  switch (value) {
-    case "userTxnOverview":
-    case "blockMetadataOverview":
-    case "stateCheckpointOverview":
-    case "pendingTxnOverview":
-    case "genesisTxnOverview":
-      return <BarChartOutlinedIcon fontSize="small" />;
-    case "balanceChange":
-      return <AccountBalanceWalletOutlinedIcon fontSize="small" />;
-    case "events":
-      return <CallMergeOutlinedIcon fontSize="small" />;
-    case "payload":
-      return <FileCopyOutlinedIcon fontSize="small" />;
-    case "changes":
-      return <CodeOutlinedIcon fontSize="small" />;
-    case "unknown":
-      return <HelpOutlineOutlinedIcon fontSize="small" />;
-    default:
-      return assertNever(value);
-  }
-}
-
 type TabPanelProps = {
   value: TabValue;
   transaction: Types.Transaction;
@@ -138,15 +110,58 @@ export default function TransactionTabs({
   return (
     <Box sx={{width: "100%"}}>
       <Box>
-        <StyledTabs value={value} onChange={handleChange}>
+        <StyledTabs
+          value={value}
+          onChange={handleChange}
+          sx={{
+            "& .MuiTabs-flexContainer": {
+              gap: "8px",
+            },
+          }}
+        >
           {tabValues.map((value, i) => (
             <StyledTab
               key={i}
               value={value}
-              icon={getTabIcon(value)}
               label={getTabLabel(value)}
               isFirst={i === 0}
               isLast={i === tabValues.length - 1}
+              sx={{
+                borderRadius: "8px 16px 4px 18px",
+                padding: "10px 24px",
+                minHeight: "unset",
+                textTransform: "uppercase",
+                fontWeight: 800,
+                fontSize: "1rem",
+                backgroundColor: "#FFD337",
+                border: "none",
+                color: "black",
+
+                "&.Mui-selected": {
+                  border: "none",
+                  color: "#fff",
+                  backgroundColor: "rgba(0, 0, 0, 0.6)",
+                  position: "relative",
+                  "&::before": {
+                    content: '""',
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    left: 0,
+                    borderRadius: "8px 16px 4px 18px",
+                    padding: "1px",
+                    background: "linear-gradient(90deg, #FFFFFF, #FFD337)",
+                    maskImage:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    maskComposite: "exclude",
+                    WebkitMask:
+                      "linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)",
+                    WebkitMaskComposite: "xor",
+                    pointerEvents: "none",
+                  },
+                },
+              }}
             />
           ))}
         </StyledTabs>

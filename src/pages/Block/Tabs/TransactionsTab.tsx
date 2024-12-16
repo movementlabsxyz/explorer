@@ -1,7 +1,7 @@
 import React from "react";
 import {Types} from "aptos";
-import TransactionsTable from "../../Transactions/TransactionsTable";
 import EmptyTabContent from "../../../components/IndividualPageContent/EmptyTabContent";
+import BlockTransactionsTable from "../Tables/BlockTransactionsTable";
 
 type TransactionsTabProps = {
   data: Types.Block;
@@ -13,5 +13,9 @@ export default function TransactionsTab({data}: TransactionsTabProps) {
     return <EmptyTabContent />;
   }
 
-  return <TransactionsTable transactions={transactions} />;
+  return (
+    <>
+      <BlockTransactionsTable transactions={transactions} />
+    </>
+  );
 }

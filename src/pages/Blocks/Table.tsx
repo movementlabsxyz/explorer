@@ -47,8 +47,18 @@ function BlockAgeCell({block}: BlockCellProps) {
 
 function BlockHashCell({block}: BlockCellProps) {
   return (
-    <GeneralTableCell sx={{textAlign: "left"}}>
-      <HashButton hash={block.block_hash} type={HashType.OTHERS} />
+    <GeneralTableCell sx={{}}>
+      <HashButton
+        hash={block.block_hash}
+        type={HashType.OTHERS}
+        sx={{
+          color: "#FFDA34",
+
+          "& .MuiButton-root": {
+            backgroundColor: "#000000",
+          },
+        }}
+      />
     </GeneralTableCell>
   );
 }

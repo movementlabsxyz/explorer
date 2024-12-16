@@ -4,7 +4,13 @@ import ContentRow from "../../../../components/IndividualPageContent/ContentRow"
 import {getLearnMoreTooltip} from "../../helpers";
 import {Link} from "../../../../routing";
 
-export default function TransactionBlockRow({version}: {version: string}) {
+export default function TransactionBlockRow({
+  version,
+  color,
+}: {
+  version: string;
+  color?: string;
+}) {
   const {data} = useGetBlockByVersion({version: parseInt(version)});
 
   if (!data) {
@@ -14,6 +20,7 @@ export default function TransactionBlockRow({version}: {version: string}) {
   return (
     <ContentRow
       title="Block:"
+      titleColor={color}
       value={
         <Link to={`/block/${data.block_height}`} underline="none">
           {data.block_height}

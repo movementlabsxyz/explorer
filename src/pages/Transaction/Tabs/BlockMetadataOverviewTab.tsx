@@ -49,7 +49,7 @@ export default function BlockMetadataOverviewTab({
         />
       </ContentBox>
       <ContentBox>
-        <TransactionBlockRow version={transactionData.version} />
+        <TransactionBlockRow version={transactionData.version} color="" />
         <ContentRow
           title="Epoch:"
           value={transactionData.epoch}
