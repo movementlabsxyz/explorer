@@ -11,6 +11,9 @@ import DailyUserTransactionsChart from "./Charts/DailyUserTransactionsChart";
 import NetworkInfo from "./NetworkInfo/NetworkInfo";
 import DailyGasConsumptionChart from "./Charts/DailyGasConsumptionChart";
 import MonthlyActiveUserChart from "./Charts/MonthlyActiveUserChart";
+import DailyNewAccountsCreatedChart from "./Charts/DailyNewAccountsCreatedChart";
+import DailyDeployedContractsChart from "./Charts/DailyDeployedContractsChart";
+import DailyContractDeployersChart from "./Charts/DailyContractDeployersChart";
 
 export default function MainnetAnalytics() {
   const [days, setDays] = useState<ChartRangeDays>(

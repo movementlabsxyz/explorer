@@ -6,13 +6,9 @@ import NetworkSelect from "./NetworkSelect";
 // import {useColorMode} from "../../context";
 import {useMediaQuery, useTheme} from "@mui/material";
 
-// @ts-expect-error logo
 import LogoIconW from "../../assets/svg/logo_txt_w.svg?react";
-// @ts-expect-error logo
 import LogoIconB from "../../assets/svg/logo_txt_b.svg?react";
-// @ts-expect-error logo
 import IconBell from "../../assets/svg/icon_bell.svg?react";
-// @ts-expect-error logo
 import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
 
 import Box from "@mui/material/Box";
@@ -461,8 +457,8 @@ export default function Header() {
                   handleNavigate={() =>
                     navigate(`/account/${account?.address}`)
                   }
-                  sortAvailableWallets={sortPetraFirst}
-                  sortInstallableWallets={sortPetraFirst}
+                  // sortAvailableWallets={sortPetraFirst}
+                  // sortInstallableWallets={sortPetraFirst}
                   modalMaxWidth="sm"
                 />
               </Box>

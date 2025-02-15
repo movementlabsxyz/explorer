@@ -59,13 +59,12 @@ export function useGetNameFromAddress(
           return null;
         }
       }
-      // Ensure there's always .apt at the end
-      return genANSName(
+      return genMNSName(
         address,
         shouldCache,
         state.network_name,
         isValidator,
-      ).then((name) => (name ? `${name}.apt` : null));
+      ).then((name: string | null) => (name ? `${name}.move` : null));
     },
   });
 
@@ -74,50 +73,50 @@ export function useGetNameFromAddress(
 
 // this function will return null if ANS name not found to prevent useQuery complaining about undefined return
 // source for full context: https://tanstack.com/query/v4/docs/react/guides/migrating-to-react-query-4#undefined-is-an-illegal-cache-value-for-successful-queries
-// async function genMNSName(
-//   address: string,
-//   shouldCache: boolean,
-//   networkName: NetworkName,
-//   isValidator: boolean,
-// ): Promise<string | null> {
-//   const primaryNameUrl = getFetchNameUrl(networkName, address, true);
+async function genMNSName(
+  address: string,
+  shouldCache: boolean,
+  networkName: NetworkName,
+  isValidator: boolean,
+): Promise<string | null> {
+  const primaryNameUrl = getFetchNameUrl(networkName, address, true);
 
-//   if (!primaryNameUrl) {
-//     return null;
-//   }
+  if (!primaryNameUrl) {
+    return null;
+  }
 
-//   try {
-//     const {name: primaryName} = await fetchJsonResponse(primaryNameUrl);
+  try {
+    const {name: primaryName} = await fetchJsonResponse(primaryNameUrl);
 
-//     if (primaryName) {
-//       if (shouldCache) {
-//         setLocalStorageWithExpiry(address, primaryName, TTL);
-//       }
-//       return primaryName;
-//     } else if (isValidator) {
-//       return null;
-//     } else {
-//       const nameUrl = getFetchNameUrl(networkName, address, false);
+    if (primaryName) {
+      if (shouldCache) {
+        setLocalStorageWithExpiry(address, primaryName, TTL);
+      }
+      return primaryName;
+    } else if (isValidator) {
+      return null;
+    } else {
+      const nameUrl = getFetchNameUrl(networkName, address, false);
 
-//       if (!nameUrl) {
-//         return null;
-//       }
+      if (!nameUrl) {
+        return null;
+      }
 
-//       const {name} = await fetchJsonResponse(nameUrl);
-//       if (shouldCache) {
-//         setLocalStorageWithExpiry(address, name, TTL);
-//       }
-//       return name ?? null;
-//     }
-//   } catch (error) {
-//     console.error(
-//       "ERROR! Couldn't find MNS name for %s on %s",
-//       address,
-//       networkName,
-//       error,
-//       typeof error,
-//     );
-//   }
+      const {name} = await fetchJsonResponse(nameUrl);
+      if (shouldCache) {
+        setLocalStorageWithExpiry(address, name, TTL);
+      }
+      return name ?? null;
+    }
+  } catch (error) {
+    console.error(
+      "ERROR! Couldn't find MNS name for %s on %s",
+      address,
+      networkName,
+      error,
+      typeof error,
+    );
+  }
 
-//   return null;
-// }
+  return null;
+}

@@ -25,6 +25,7 @@ export type AnalyticsData = {
   }[];
   cumulative_deployers: TotalDeployers[];
   total_accounts: TotalAccounts[];
+  latest_node_count: NodeCountData[];
 };
 
 export type DailyAnalyticsData =
@@ -90,6 +91,11 @@ export type TotalDeployers = {
 
 export type TotalAccounts = {
   total_accounts: number;
+};
+
+export type NodeCountData = {
+  date: string;
+  approx_nodes: number;
 };
 
 export function useGetAnalyticsData() {

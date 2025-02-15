@@ -44,7 +44,7 @@ export function useGetAccountCoinCount(address: string) {
     // TODO type this
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     queryFn: async (): Promise<any> => {
-      const response = await state.sdk_v2_client.queryIndexer<{
+      const response = await state.sdk_v2_client?.queryIndexer<{
         current_fungible_asset_balances_aggregate: {aggregate: {count: number}};
       }>({
         query: {
@@ -55,7 +55,7 @@ export function useGetAccountCoinCount(address: string) {
         },
       });
 
-      return response.current_fungible_asset_balances_aggregate.aggregate.count;
+      return response?.current_fungible_asset_balances_aggregate.aggregate.count;
     },
   });
 }

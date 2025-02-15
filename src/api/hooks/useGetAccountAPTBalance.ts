@@ -9,7 +9,6 @@ export function useGetAccountAPTBalance(address: Types.Address) {
   // TODO: Convert all Types.Address to AccountAddress
   return useQuery<string, ResponseError>({
     queryKey: ["aptBalance", {address}, state.network_value],
-    // @ts-expect-error
     queryFn: () => getBalance(state.sdk_v2_client, address),
     retry: false,
   });

@@ -1,4 +1,5 @@
 import * as React from "react";
+import {JSX} from "react";
 import {Box} from "@mui/material";
 import TransactionsTab from "./Tabs/TransactionsTab";
 import InfoTab from "./Tabs/InfoTab";
@@ -104,7 +105,7 @@ function TabPanel({
   objectData,
   resourceData,
   isObject,
-}: TabPanelProps): React.JSX.Element {
+}: TabPanelProps): JSX.Element {
   const TabComponent = TabComponents[value];
   return (
     <TabComponent

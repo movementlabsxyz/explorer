@@ -61,7 +61,7 @@
   "scripts": {
     "start": "vite --port 3000",
     "dev": "vite --port 3000",
-    "build": "tsc --noEmit && cross-env NODE_OPTIONS=--max-old-space-size=4096 vite build",
+    "build": "tsc --noEmit && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
     "serve": "vite preview",
     "lint": "tsc --noEmit && eslint --report-unused-disable-directives --max-warnings 0",
     "fmt": "prettier --write '**/*.(js|jsx|ts|tsx|json|css|scss|md)'",
@@ -69,7 +69,10 @@
     "postinstall": "husky install"
   },
   "lint-staged": {
-    "*": ["prettier --config .prettierrc.json -w", "eslint --fix"]
+    "*": [
+      "prettier --config .prettierrc.json -w",
+      "eslint --fix"
+    ]
   },
   "browserslist": {
     "production": [
@@ -97,6 +100,7 @@
     "@typescript-eslint/eslint-plugin": "^8.23.0",
     "@typescript-eslint/parser": "^8.23.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^7.0.3",
     "eslint": "^9.19.0",
     "eslint-plugin-html": "^8.1.2",
     "eslint-plugin-react-hooks": "^5.1.0",
