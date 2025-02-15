@@ -1,3 +1,11 @@
 build
 coverage
 public/world.json
+robots.txt
+.husky/
+.prettierignore
+.tool-versions
+.gitattributes
+.editorconfig
+.node-version
+*.sql

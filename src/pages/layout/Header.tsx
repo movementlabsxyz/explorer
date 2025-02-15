@@ -206,8 +206,7 @@ export default function Header() {
   const scrollTop = () => {
     const docElement = document.documentElement;
     const windowTop =
-      (window.pageYOffset || docElement.scrollTop) -
-      (docElement.clientTop || 0);
+      (window.scrollY || docElement.scrollTop) - (docElement.clientTop || 0);
 
     if (windowTop > 0) {
       window.scrollTo({
@@ -299,7 +298,7 @@ export default function Header() {
     } else {
       setIsNotifiPopupVisible(true);
     }
-  }, [connected]);
+  }, [connected, setWalletConnectModalOpen]);
 
   const MobileHeader = useCallback(() => {
     return (
@@ -462,8 +461,8 @@ export default function Header() {
                   handleNavigate={() =>
                     navigate(`/account/${account?.address}`)
                   }
-                  sortDefaultWallets={sortPetraFirst}
-                  sortMoreWallets={sortPetraFirst}
+                  sortAvailableWallets={sortPetraFirst}
+                  sortInstallableWallets={sortPetraFirst}
                   modalMaxWidth="sm"
                 />
               </Box>

@@ -144,8 +144,8 @@ export default function NavMobile({handleNotificationsClick}: NavMobileProps) {
         <WalletConnector
           networkSupport={state.network_name}
           handleNavigate={() => navigate(`/account/${account?.address}`)}
-          sortDefaultWallets={sortPetraFirst}
-          sortMoreWallets={sortPetraFirst}
+          sortAvailableWallets={sortPetraFirst}
+          sortInstallableWallets={sortPetraFirst}
           modalMaxWidth="sm"
         />
       </Menu>
