@@ -115,6 +115,7 @@ export default function WalletsModal({
             display: "flex",
             flexDirection: "column",
           }}
+          fontWeight={600}
         >
           {false ? (
             <>

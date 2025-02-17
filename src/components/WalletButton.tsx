@@ -68,7 +68,7 @@ export default function WalletButton({
             {/* <AccountBalanceWalletOutlinedIcon sx={{marginRight: 1}} /> */}
             <Typography
               noWrap
-              sx={{fontWeight: 700, fontSize: "20px", lineHeight: "30.07px"}}
+              sx={{fontWeight: 600, fontSize: "18px", lineHeight: "28.07px"}}
             >
               Connect Wallet
             </Typography>
