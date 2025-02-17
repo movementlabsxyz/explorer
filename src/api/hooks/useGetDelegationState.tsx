@@ -19,6 +19,7 @@ export function useGetDelegationState(
 ): DelegationState {
   const {account} = useWallet();
   const lockedUntilSecs = getLockedUtilSecs(accountResource);
+
   // FIXME Handle the case where the account is not connected
   const balance = useGetAccountAPTBalance(account?.address ?? "");
   const {delegatorBalance} = useGetNumberOfDelegators(validator.owner_address);
