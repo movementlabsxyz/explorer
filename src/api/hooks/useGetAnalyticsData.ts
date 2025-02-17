@@ -8,7 +8,7 @@ export const PORTO_ANALYTICS_DATA_URL =
   "https://storage.googleapis.com/explorer_stats/chain_stats_porto_v2.json";
 
 export const ANALYTICS_DATA_URL =
-  "https://storage.googleapis.com/explorer_stats/chain_stats_mainnet.json";
+  "https://storage.googleapis.com/explorer_stats/chain_stats_mainnet_v2.json";
 
 export type AnalyticsData = {
   daily_active_users: DailyActiveUserData[];
@@ -106,7 +106,7 @@ export function useGetAnalyticsData() {
     const options = {
       "bardock testnet": null,
       testnet: PORTO_ANALYTICS_DATA_URL,
-      mainnet: null,
+      mainnet: ANALYTICS_DATA_URL,
       devnet: null,
       local: null,
       mevmdevnet: null,
