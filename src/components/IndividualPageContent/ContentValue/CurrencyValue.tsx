@@ -89,10 +89,9 @@ export function APTCurrencyValue({
   }
 
   return (
-    <></>
-    // <CurrencyValue
-    //   {...{amount, decimals, fixedDecimalPlaces}}
-    //   currencyCode="MOVE"
-    // />
+    <CurrencyValue
+      {...{amount, decimals, fixedDecimalPlaces}}
+      currencyCode="MOVE"
+    />
   );
 }
