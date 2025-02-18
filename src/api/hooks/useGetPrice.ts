@@ -20,7 +20,7 @@ const COINGECKO_API_ENDPOINT = "https://api.coingecko.com/api/v3/simple/price";
  * @returns The USD price of the cryptocurrency or null if the price fetch fails
  */
 export async function getPrice(
-  coinId: string = "aptos",
+  coinId: string = "movement",
 ): Promise<number | null> {
   const query = {
     ids: coinId,
