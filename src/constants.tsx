@@ -22,12 +22,12 @@ export const mevmdevnetUrl =
 
   export const networks = {
     mainnet: mainnetUrl,
-    //testnet: "",
+    testnet: "",
     "bardock testnet": bardockTestnetUrl,
-    //devnet: devnetUrl,
-    //local: "http://localhost:30731",
-    //mevmdevnet: mevmdevnetUrl,
-    //custom: "",
+    devnet: devnetUrl,
+    local: "http://localhost:30731",
+    mevmdevnet: "",
+    custom: "",
   };
 
 export type NetworkName = keyof typeof networks;
