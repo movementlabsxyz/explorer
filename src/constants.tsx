@@ -20,16 +20,15 @@ export const mevmdevnetUrl =
   import.meta.env.IMOLA_URL ||
   `https://${prefix}aptos.devnet.imola.movementlabs.xyz/v1`;
 
-// This is the constant mapped in the NetworkSelect.tsx file
-export const networks = {
-  mainnet: mainnetUrl,
-  testnet: "",
-  "bardock testnet": bardockTestnetUrl,
-  devnet: devnetUrl,
-  local: "http://localhost:30731",
-  mevmdevnet: mevmdevnetUrl,
-  custom: "",
-};
+  export const networks = {
+    mainnet: mainnetUrl,
+    //testnet: "",
+    "bardock testnet": bardockTestnetUrl,
+    //devnet: devnetUrl,
+    //local: "http://localhost:30731",
+    //mevmdevnet: mevmdevnetUrl,
+    //custom: "",
+  };
 
 export type NetworkName = keyof typeof networks;
 
