@@ -161,7 +161,7 @@ export const scamAddresses: Record<string, string> = {
 // This provides a way to hardcode coins that are not in the token list, but still
 // have functionality used elsewhere
 export const HardCodedCoins: Record<string, CoinDescription> = {
-  "0x1::aptos_coin::AptosCoin": {
+  "0xa": {
     chainId: 1,
     tokenAddress: "0x1::aptos_coin::AptosCoin",
     faAddress: "0xa",
@@ -196,7 +196,7 @@ export const HardCodedCoins: Record<string, CoinDescription> = {
     bridge: null,
     panoraSymbol: null,
     logoUrl: "https://tether.to/images/logoCircle.svg",
-    websiteUrl: "",
+    websiteUrl: " ",
     category: "Native",
     isInPanoraTokenList: true,
     isBanned: false,
@@ -220,7 +220,7 @@ export const HardCodedCoins: Record<string, CoinDescription> = {
     bridge: null,
     panoraSymbol: null,
     logoUrl: "https://circle.com/usdc-icon",
-    websiteUrl: "",
+    websiteUrl: " ",
     category: "Native",
     isInPanoraTokenList: true,
     isBanned: false,
@@ -244,7 +244,7 @@ export const HardCodedCoins: Record<string, CoinDescription> = {
     bridge: null,
     panoraSymbol: null,
     logoUrl: "https://etherscan.io/token/images/weth_28.png",
-    websiteUrl: "",
+    websiteUrl: " ",
     category: "Native",
     isInPanoraTokenList: true,
     isBanned: false,
@@ -268,7 +268,7 @@ export const HardCodedCoins: Record<string, CoinDescription> = {
     bridge: null,
     panoraSymbol: null,
     logoUrl: "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1747036384",
-    websiteUrl: "",
+    websiteUrl: " ",
     category: "Native",
     isInPanoraTokenList: true,
     isBanned: false,
