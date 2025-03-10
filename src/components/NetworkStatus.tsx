@@ -101,7 +101,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ componentName }) => {
     const { components, statusInfo } = useStatusPage(componentName)
 
     const getStatusColor = (indicator: string | undefined, maintenance?: boolean) => {
-        if (maintenance) return '#93c5fd'
+        if (maintenance) return '#ffd337'
         switch (indicator?.toLowerCase()) {
             case 'operational':
             case 'none':
@@ -164,7 +164,7 @@ const StatusCard: React.FC<StatusCardProps> = ({ componentName }) => {
         
         const maintenanceTextStyle = {
             ...textStyle,
-            color: '#93c5fd'
+            color: '#ffd337'
         }
         
         const normalTextStyle = {
