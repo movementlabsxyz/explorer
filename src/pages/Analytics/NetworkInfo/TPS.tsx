@@ -53,8 +53,7 @@ export default function TPS() {
             <Box>
               <Box sx={{fontWeight: 700}}>Peak Last 30 Days</Box>
               <Box>
-                Highest rate of transactions per second over the past 30 days,
-                averaged over 15 blocks.
+                Maximum number of transactions in a block on a given day, divided by the duration of that block in seconds.
               </Box>
             </Box>
           </Stack>
@@ -63,8 +62,7 @@ export default function TPS() {
             <Box>
               <Box sx={{fontWeight: 700}}>Peak Last 30 Days</Box>
               <Box>
-                Highest rate of transactions per second over the past 30 days,
-                averaged over 15 blocks.
+              Maximum number of transactions in a block on a given day, divided by the duration of that block in seconds.
               </Box>
             </Box>
           </Stack>
