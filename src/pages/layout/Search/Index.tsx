@@ -35,6 +35,7 @@ import {
 import {getAssetSymbol, tryStandardizeAddress} from "../../../utils";
 import {getEmojicoinMarketAddressAndTypeTags} from "../../../components/Table/VerifiedCell";
 import {getBlockByHeight, getBlockByVersion} from "../../../api/v2";
+import { useGetVerifiedAddresses } from "../../../api/hooks/useGetVerifiedAddresses";
 
 export type SearchResult = {
   label: string;
@@ -62,7 +63,7 @@ export default function HeaderSearch() {
   const augmentToWithGlobalSearchParams = useAugmentToWithGlobalSearchParams();
 
   const coinList = useGetCoinList();
-
+  const {data: verifiedAddresses} = useGetVerifiedAddresses();
   useEffect(() => {
     let timer: NodeJS.Timeout;
 
@@ -309,7 +310,7 @@ export default function HeaderSearch() {
   ): Promise<(SearchResult | null)[]> {
     const searchResults: SearchResult[] = [];
     const searchLowerCase = searchText.toLowerCase();
-    Object.entries(knownAddresses).forEach(([address, knownName]) => {
+    Object.entries(verifiedAddresses ?? knownAddresses).forEach(([address, knownName]) => {
       if (address.toLowerCase() !== '0x000000000000000000000000000000000000000000000000000000000000000a' && prefixMatchLongerThan3(searchLowerCase, knownName)) {
         searchResults.push({
           label: `Account ${truncateAddress(address)} ${knownName}`,
