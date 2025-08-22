@@ -14,6 +14,7 @@ function BackButton(handleClick: () => void) {
           p: 0,
           "&:hover": {
             background: "transparent",
+            opacity: "0.8",
           },
         }}
         startIcon={<ArrowBackRoundedIcon />}
