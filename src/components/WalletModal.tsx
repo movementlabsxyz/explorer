@@ -50,7 +50,7 @@ export default function WalletsModal({
     groupAndSortWallets(wallets, {});
 
   function cleanWalletList(wallets: AnyAptosWallet[]) {
-    const unsupportedWallets = ['Dev T wallet', 'Pontem Wallet', 'TrustWallet', 'TokenPocket', 'Martian', 'Rise', 'Petra']
+    const unsupportedWallets = ['Dev T wallet', 'Pontem Wallet', 'Pontem', 'TrustWallet', 'TokenPocket', 'Martian', 'Rise', 'Petra']
     return wallets
       .filter(
         (wallet, index, self) =>
