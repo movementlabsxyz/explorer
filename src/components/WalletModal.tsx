@@ -45,7 +45,6 @@ export default function WalletsModal({
 
   const { wallets = [] } = useWallet();
 
-  // Using the same wallet sorting logic as the Bridge
   const { availableWallets, installableWallets } =
     groupAndSortWallets(wallets, {});
 

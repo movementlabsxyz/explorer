@@ -23,10 +23,10 @@ export interface WalletConnectorProps {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function WalletConnector({
-  networkSupport: _networkSupport,  // Accept but don't use
+  networkSupport: _networkSupport,
   handleNavigate,
-  sortDefaultWallets: _sortDefaultWallets,  // Accept but don't use
-  sortMoreWallets: _sortMoreWallets,  // Accept but don't use
+  sortDefaultWallets: _sortDefaultWallets,
+  sortMoreWallets: _sortMoreWallets,
   modalMaxWidth,
 }: WalletConnectorProps) {
   const [
