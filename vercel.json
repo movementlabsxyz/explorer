@@ -12,16 +12,8 @@
   ],
   "redirects": [
     {
-      "source": "/:path*",
-      "has": [
-        {
-          "type": "query",
-          "key": "network",
-          "value": "testnet"
-        }
-      ],
-      "destination": "/",
-      "statusCode": 308
+      "source": "/transactions",
+      "destination": "/"
     }
   ],
   "rewrites": [
