@@ -20,8 +20,8 @@
           "value": "testnet"
         }
       ],
-      "destination": "/:path*?network=bardock%20testnet",
-      "permanent": true
+      "destination": "/",
+      "statusCode": 308
     }
   ],
   "rewrites": [
