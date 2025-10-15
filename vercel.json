@@ -13,7 +13,7 @@
   "redirects": [
     {
       "source": "/transactions",
-      "destination": "/"
+      "destination": "/?network=mainnet"
     }
   ],
   "rewrites": [
