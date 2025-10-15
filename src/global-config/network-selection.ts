@@ -4,6 +4,7 @@ import {
   NetworkName,
   defaultNetworkName,
   isValidNetworkName,
+  networks,
 } from "../constants";
 
 const SELECTED_NETWORK_LOCAL_STORAGE_KEY = "selected_network";
@@ -63,13 +64,15 @@ export function useNetworkSelector() {
     () => {
       const currentNetworkSearchParam = searchParams.get("network");
 
-      // Redirect testnet to bardock testnet
+      // Redirect testnet to bardock testnet (testnet is valid but has no URL)
       if (currentNetworkSearchParam === "testnet") {
         selectNetwork("bardock testnet", { replace: true });
         return;
       }
 
-      if (!isValidNetworkName(currentNetworkSearchParam ?? "")) {
+      // Check if network is valid AND has a URL (not empty)
+      if (!isValidNetworkName(currentNetworkSearchParam ?? "") ||
+        (currentNetworkSearchParam && networks[currentNetworkSearchParam as NetworkName] === "")) {
         selectNetwork(getUserSelectedNetworkFromLocalStorageWithDefault(), {
           replace: true,
         });
