@@ -1,16 +1,16 @@
-import React from "react";
-import {createRoot} from "react-dom/client";
-import {BrowserRouter} from "react-router-dom";
-import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import React, { useEffect } from "react";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
 import ExplorerRoutes from "./ExplorerRoutes";
 
 // import * as Sentry from "@sentry/react";
 // import {BrowserTracing} from "@sentry/tracing";
 
-import ReactGA from "react-ga4";
-import {initGTM} from "./api/hooks/useGoogleTagManager";
-import {GTMEvents} from "./dataConstants";
 import { AptosClient } from "aptos";
+import ReactGA from "react-ga4";
+import { initGTM } from "./api/hooks/useGoogleTagManager";
+import { GTMEvents } from "./dataConstants";
 
 initGTM({
   events: {
@@ -51,14 +51,27 @@ declare global {
 
 const queryClient = new QueryClient();
 
+// Component to handle network=testnet redirects
+function NetworkRedirect() {
+  useEffect(() => {
+    const url = new URL(window.location.href)
+    if (url.searchParams.get('network') === 'testnet') {
+      url.searchParams.set('network', 'bardock testnet')
+      window.location.replace(url.toString())
+    }
+  }, [])
+  return null
+}
+
 const container = document.getElementById("root");
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <ExplorerRoutes />
-        </BrowserRouter>
-      </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <NetworkRedirect />
+        <ExplorerRoutes />
+      </BrowserRouter>
+    </QueryClientProvider>
   </React.StrictMode>,
 );

@@ -1,21 +1,4 @@
 {
-  "headers": [
-    {
-      "source": "/:path*",
-      "headers": [
-        {
-          "key": "x-routes-probe",
-          "value": "1"
-        }
-      ]
-    }
-  ],
-  "redirects": [
-    {
-      "source": "/:path*?network=testnet",
-      "destination": "/?network=bardock+testnet"
-    }
-  ],
   "rewrites": [
     {
       "source": "/(.*)",
