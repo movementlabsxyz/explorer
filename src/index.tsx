@@ -55,9 +55,12 @@ const queryClient = new QueryClient();
 function NetworkRedirect() {
   useEffect(() => {
     const url = new URL(window.location.href)
-    if (url.searchParams.get('network') === 'testnet') {
+    const networkParam = url.searchParams.get('network')
+
+    if (networkParam === 'testnet') {
+      // Update the URL without page reload
       url.searchParams.set('network', 'bardock testnet')
-      window.location.replace(url.toString())
+      window.history.replaceState(null, '', url.toString())
     }
   }, [])
   return null
