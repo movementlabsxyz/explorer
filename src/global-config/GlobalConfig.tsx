@@ -1,7 +1,7 @@
-import { Aptos, AptosConfig, NetworkToNetworkName } from "@aptos-labs/ts-sdk";
-import { AptosClient, IndexerClient } from "aptos";
-import React, { useMemo, useState } from "react";
-import { getGraphqlURI } from "../api/hooks/useGraphqlClient";
+import {Aptos, AptosConfig, NetworkToNetworkName} from "@aptos-labs/ts-sdk";
+import {AptosClient, IndexerClient} from "aptos";
+import React, {useMemo, useState} from "react";
+import {getGraphqlURI} from "../api/hooks/useGraphqlClient";
 import {
   FeatureName,
   NetworkName,
@@ -13,7 +13,7 @@ import {
   getSelectedFeatureFromLocalStorage,
   useFeatureSelector,
 } from "./feature-selection";
-import { useNetworkSelector } from "./network-selection";
+import {useNetworkSelector} from "./network-selection";
 
 const HEADERS = {
   "x-indexer-client": "movement-explorer",
@@ -54,13 +54,14 @@ function deriveGlobalState({
 
   // If network has no URL, fallback to mainnet to prevent crashes
   const safeNetworkName = networkUrl === "" ? defaultNetworkName : network_name;
-  const safeNetworkUrl = networkUrl === "" ? networks[defaultNetworkName] : networkUrl;
+  const safeNetworkUrl =
+    networkUrl === "" ? networks[defaultNetworkName] : networkUrl;
 
   const indexerUri = getGraphqlURI(safeNetworkName);
   const apiKey = getApiKey(safeNetworkName);
   let indexerClient = undefined;
   if (indexerUri) {
-    indexerClient = new IndexerClient(indexerUri, { HEADERS, TOKEN: apiKey });
+    indexerClient = new IndexerClient(indexerUri, {HEADERS, TOKEN: apiKey});
   }
   return {
     feature_name,
@@ -137,4 +138,4 @@ export const useGlobalState = () =>
     React.useContext(GlobalActionsContext),
   ] as const;
 
-export const getCustomParameters = () => { };
+export const getCustomParameters = () => {};

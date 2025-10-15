@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import {useEffect} from "react";
+import {useSearchParams} from "react-router-dom";
 import {
   NetworkName,
   defaultNetworkName,
@@ -45,7 +45,7 @@ export function useNetworkSelector() {
 
   function selectNetwork(
     network: NetworkName,
-    { replace = false }: { replace?: boolean } = {},
+    {replace = false}: {replace?: boolean} = {},
   ) {
     if (!isValidNetworkName(network)) return;
     setSearchParams(
@@ -54,7 +54,7 @@ export function useNetworkSelector() {
         newParams.set("network", network);
         return newParams;
       },
-      { replace },
+      {replace},
     );
     writeSelectedNetworkToLocalStorage(network);
   }
@@ -66,13 +66,16 @@ export function useNetworkSelector() {
 
       // Redirect testnet to bardock testnet (testnet is valid but has no URL)
       if (currentNetworkSearchParam === "testnet") {
-        selectNetwork("bardock testnet", { replace: true });
+        selectNetwork("bardock testnet", {replace: true});
         return;
       }
 
       // Check if network is valid AND has a URL (not empty)
-      if (!isValidNetworkName(currentNetworkSearchParam ?? "") ||
-        (currentNetworkSearchParam && networks[currentNetworkSearchParam as NetworkName] === "")) {
+      if (
+        !isValidNetworkName(currentNetworkSearchParam ?? "") ||
+        (currentNetworkSearchParam &&
+          networks[currentNetworkSearchParam as NetworkName] === "")
+      ) {
         selectNetwork(defaultNetworkName, {
           replace: true,
         });
