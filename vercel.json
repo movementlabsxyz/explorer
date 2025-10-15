@@ -9,7 +9,7 @@
           "value": "testnet"
         }
       ],
-      "destination": "/:path*?network=bardock+testnet",
+      "destination": "/:path*?network=bardock%2Btestnet",
       "permanent": true
     }
   ],
