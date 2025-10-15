@@ -73,7 +73,7 @@ export function useNetworkSelector() {
       // Check if network is valid AND has a URL (not empty)
       if (!isValidNetworkName(currentNetworkSearchParam ?? "") ||
         (currentNetworkSearchParam && networks[currentNetworkSearchParam as NetworkName] === "")) {
-        selectNetwork(getUserSelectedNetworkFromLocalStorageWithDefault(), {
+        selectNetwork(defaultNetworkName, {
           replace: true,
         });
       }
