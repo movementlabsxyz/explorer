@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React, { useEffect } from "react";
+import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import ExplorerRoutes from "./ExplorerRoutes";
@@ -51,20 +51,6 @@ declare global {
 
 const queryClient = new QueryClient();
 
-// Component to handle network=testnet redirects
-function NetworkRedirect() {
-  useEffect(() => {
-    const url = new URL(window.location.href)
-    const networkParam = url.searchParams.get('network')
-
-    if (networkParam === 'testnet') {
-      // Update the URL without page reload
-      url.searchParams.set('network', 'bardock testnet')
-      window.history.replaceState(null, '', url.toString())
-    }
-  }, [])
-  return null
-}
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
@@ -72,7 +58,6 @@ root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <NetworkRedirect />
         <ExplorerRoutes />
       </BrowserRouter>
     </QueryClientProvider>

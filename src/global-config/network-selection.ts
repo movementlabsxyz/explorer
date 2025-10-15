@@ -1,10 +1,10 @@
-import {useSearchParams} from "react-router-dom";
+import { useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import {
   NetworkName,
-  isValidNetworkName,
   defaultNetworkName,
+  isValidNetworkName,
 } from "../constants";
-import {useEffect} from "react";
 
 const SELECTED_NETWORK_LOCAL_STORAGE_KEY = "selected_network";
 
@@ -44,7 +44,7 @@ export function useNetworkSelector() {
 
   function selectNetwork(
     network: NetworkName,
-    {replace = false}: {replace?: boolean} = {},
+    { replace = false }: { replace?: boolean } = {},
   ) {
     if (!isValidNetworkName(network)) return;
     setSearchParams(
@@ -53,7 +53,7 @@ export function useNetworkSelector() {
         newParams.set("network", network);
         return newParams;
       },
-      {replace},
+      { replace },
     );
     writeSelectedNetworkToLocalStorage(network);
   }
@@ -62,6 +62,13 @@ export function useNetworkSelector() {
   useEffect(
     () => {
       const currentNetworkSearchParam = searchParams.get("network");
+
+      // Redirect testnet to bardock testnet
+      if (currentNetworkSearchParam === "testnet") {
+        selectNetwork("bardock testnet", { replace: true });
+        return;
+      }
+
       if (!isValidNetworkName(currentNetworkSearchParam ?? "")) {
         selectNetwork(getUserSelectedNetworkFromLocalStorageWithDefault(), {
           replace: true,
