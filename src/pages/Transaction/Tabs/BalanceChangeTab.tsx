@@ -133,9 +133,36 @@ export default function BalanceChangeTab({transaction}: BalanceChangeTabProps) {
     return BigInt(activity.amount);
   }
 
+  // Find gas fee event to filter out duplicate withdraw events
+  // The indexer creates both a GasFeeEvent and a WithdrawEvent for gas payments,
+  // which causes double-counting in the balance change view
+  const gasFeeActivity =
+    transactionChangesResponse?.fungible_asset_activities.find((a) =>
+      a.type.includes("GasFeeEvent"),
+    );
+  const gasFeePayerAddress = gasFeeActivity
+    ? (gasFeeActivity.gas_fee_payer_address ?? gasFeeActivity.owner_address)
+    : null;
+  const gasFeeAmount = gasFeeActivity?.amount ?? 0;
+
   const balanceChanges: BalanceChange[] =
     transactionChangesResponse?.fungible_asset_activities
       .filter((a) => a.amount !== null)
+      .filter((a) => {
+        // Filter out WithdrawEvent that duplicates the GasFeeEvent
+        // This happens when the indexer records both events for the same gas payment
+        if (
+          gasFeeActivity &&
+          a.type.includes("WithdrawEvent") &&
+          !a.type.includes("GasFee") &&
+          a.amount === gasFeeAmount &&
+          (a.owner_address === gasFeePayerAddress ||
+            a.gas_fee_payer_address === gasFeePayerAddress)
+        ) {
+          return false; // Skip this duplicate withdraw event
+        }
+        return true;
+      })
       .map((a) => {
         const entry = findCoinData(coinData?.data, a.asset_type);
 
@@ -161,21 +188,18 @@ export default function BalanceChangeTab({transaction}: BalanceChangeTabProps) {
         };
       }) ?? [];
 
-  // Find gas fee and add a storage refund event
-  const gasFeeEvent =
-    transactionChangesResponse?.fungible_asset_activities.find((a) =>
-      a.type.includes("GasFeeEvent"),
-    );
-  if (gasFeeEvent && (gasFeeEvent?.storage_refund_amount ?? 0) > 0) {
+  // Add storage refund event if present
+  if (gasFeeActivity && (gasFeeActivity.storage_refund_amount ?? 0) > 0) {
     balanceChanges.push({
-      address: gasFeeEvent.gas_fee_payer_address ?? gasFeeEvent.owner_address,
-      amount: BigInt(gasFeeEvent.storage_refund_amount),
+      address:
+        gasFeeActivity.gas_fee_payer_address ?? gasFeeActivity.owner_address,
+      amount: BigInt(gasFeeActivity.storage_refund_amount),
       type: "Storage Refund",
       asset: {
-        decimals: gasFeeEvent.metadata?.decimals,
-        symbol: gasFeeEvent.metadata?.symbol,
+        decimals: gasFeeActivity.metadata?.decimals,
+        symbol: gasFeeActivity.metadata?.symbol,
         type: "v1",
-        id: gasFeeEvent.asset_type,
+        id: gasFeeActivity.asset_type,
       },
       known: true,
       isBanned: false,
