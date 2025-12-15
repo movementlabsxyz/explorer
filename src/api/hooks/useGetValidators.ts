@@ -1,6 +1,5 @@
-import {useGlobalState} from "../../global-config/GlobalConfig";
-import {useEffect, useState} from "react";
-import {useGetValidatorSet} from "./useGetValidatorSet";
+import { useEffect, useState } from "react";
+import { useGetValidatorSet } from "./useGetValidatorSet";
 // import {Network} from "../../constants";
 // import {standardizeAddress} from "../../utils";
 
@@ -36,58 +35,16 @@ export interface GeoData {
   epoch: number;
 }
 
+// JSON validator stats loading is disabled until Movement has validator stats JSON files available
+// This includes performance metrics: rewards_growth, last_epoch_performance, liveness, location_stats, etc.
 function useGetValidatorsRawData() {
-  const [state] = useGlobalState();
-  const [validatorsRawData, setValidatorsRawData] = useState<ValidatorData[]>(
-    [],
-  );
-
-  useEffect(() => {
-    // if (
-    //   state.network_name === Network.MAINNET ||
-    //   state.network_name === Network.TESTNET
-    //   // state.network_name === Network.PREVIEWNET
-    // ) {
-    //   const getDataUrl = () => {
-    //     switch (state.network_name) {
-    //       case Network.MAINNET:
-    //         return MAINNET_VALIDATORS_DATA_URL;
-    //       // case Network.PREVIEWNET:
-    //       // return PREVIEWNET_VALIDATORS_DATA_URL;
-    //       default:
-    //         return TESTNET_VALIDATORS_DATA_URL;
-    //     }
-    //   };
-    //   const fetchData = async () => {
-    //     const response = await fetch(getDataUrl());
-    //     const rawData: ValidatorData[] = await response.json();
-    //     setValidatorsRawData(
-    //       rawData.map((validatorData) => {
-    //         return {
-    //           ...validatorData,
-    //           owner_address: standardizeAddress(validatorData.owner_address),
-    //           operator_address: standardizeAddress(
-    //             validatorData.operator_address,
-    //           ),
-    //         };
-    //       }),
-    //     );
-    //   };
-
-    //   fetchData().catch((error) => {
-    //     console.error("ERROR!", error, typeof error);
-    //   });
-    // } else {
-    setValidatorsRawData([]);
-    // }
-  }, [state]);
-
-  return {validatorsRawData};
+  // Always return empty array - JSON stats loading is disabled
+  return { validatorsRawData: [] };
 }
 
 export function useGetValidators() {
-  const {activeValidators} = useGetValidatorSet();
-  const {validatorsRawData} = useGetValidatorsRawData();
+  const { activeValidators } = useGetValidatorSet();
+  const { validatorsRawData } = useGetValidatorsRawData();
 
   const [validators, setValidators] = useState<ValidatorData[]>([]);
 
@@ -106,5 +63,5 @@ export function useGetValidators() {
     }
   }, [activeValidators, validatorsRawData]);
 
-  return {validators};
+  return { validators };
 }

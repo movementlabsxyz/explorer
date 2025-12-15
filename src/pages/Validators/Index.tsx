@@ -1,21 +1,21 @@
-import {useWallet} from "@aptos-labs/wallet-adapter-react";
-import {Box, Typography} from "@mui/material";
-import {useEffect} from "react";
-import {useConfig} from "statsig-react";
-import {STAKING_BANNER_CONFIG_NAME} from "../../dataConstants";
-import {useGlobalState} from "../../global-config/GlobalConfig";
+import { useWallet } from "@aptos-labs/wallet-adapter-react";
+import { Box, Typography } from "@mui/material";
+import { useEffect } from "react";
+import { useConfig } from "statsig-react";
+import { usePageMetadata } from "../../components/hooks/usePageMetadata";
+import { STAKING_BANNER_CONFIG_NAME } from "../../dataConstants";
+import { useGlobalState } from "../../global-config/GlobalConfig";
+import { getStableID } from "../../utils";
+import { useLogEventWithBasic } from "../Account/hooks/useLogEventWithBasic";
 import PageHeader from "../layout/PageHeader";
-import {StakingBanner} from "./StakingBanner";
+import { StakingBanner } from "./StakingBanner";
 import ValidatorsPageTabs from "./Tabs";
 import ValidatorsMap from "./ValidatorsMap";
-import {getStableID} from "../../utils";
-import {useLogEventWithBasic} from "../Account/hooks/useLogEventWithBasic";
-import {usePageMetadata} from "../../components/hooks/usePageMetadata";
 
 export default function ValidatorsPage() {
   const [state] = useGlobalState();
-  const {account, wallet} = useWallet();
-  const {config} = useConfig(STAKING_BANNER_CONFIG_NAME);
+  const { account, wallet } = useWallet();
+  const { config } = useConfig(STAKING_BANNER_CONFIG_NAME);
   const viewCountCap = config.getValue("view_count");
   const logEvent = useLogEventWithBasic();
   // Get the user's stable ID
@@ -57,7 +57,7 @@ export default function ValidatorsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  usePageMetadata({title: "Validators"});
+  usePageMetadata({ title: "Validators" });
 
   return (
     <Box>
@@ -66,8 +66,8 @@ export default function ValidatorsPage() {
         Validators
       </Typography>
       {currentViewCount &&
-      viewCountCap &&
-      Number(currentViewCount) <= Number(viewCountCap) ? (
+        viewCountCap &&
+        Number(currentViewCount) <= Number(viewCountCap) ? (
         <StakingBanner />
       ) : null}
       {state.network_name === "mainnet" && <ValidatorsMap />}
