@@ -1,10 +1,9 @@
-import React from "react";
-import {NavLink} from "react-router-dom";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
-import {useGetInMainnet} from "../../api/hooks/useGetInMainnet";
-import {useAugmentToWithGlobalSearchParams} from "../../routing";
-import {useGetInTestnet} from "../../api/hooks/useGetInTestnet";
+import Button from "@mui/material/Button";
+import { NavLink } from "react-router-dom";
+import { useGetInMainnet } from "../../api/hooks/useGetInMainnet";
+import { useGetInTestnet } from "../../api/hooks/useGetInTestnet";
+import { useAugmentToWithGlobalSearchParams } from "../../routing";
 import NetworkSelect from "./NetworkSelect";
 
 function NavButton({
@@ -21,9 +20,9 @@ function NavButton({
   return (
     <NavLink
       to={augumentToWithGlobalSearchParams(to)}
-      style={{textDecoration: "none", color: "inherit"}}
+      style={{ textDecoration: "none", color: "inherit" }}
     >
-      {({isActive}) => (
+      {({ isActive }) => (
         <Button
           variant="nav"
           title={title}
@@ -49,10 +48,10 @@ export default function Nav() {
   return (
     <Box
       sx={{
-        display: {xs: "none", md: "flex"},
+        display: { xs: "none", md: "flex" },
         alignItems: "center",
-        gap: {md: 3, lg: 0},
-        marginRight: {md: "0rem", lg: "0rem"},
+        gap: { md: 3, lg: 0 },
+        marginRight: { md: "0rem", lg: "0rem" },
       }}
     >
       <NavButton
