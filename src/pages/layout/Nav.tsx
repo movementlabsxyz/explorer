@@ -45,7 +45,6 @@ export default function Nav() {
   const inTestnet = useGetInTestnet();
 
   const mainnetShowAnalytics = false;
-  const mainnetShowValidators = false;
 
   return (
     <Box
@@ -70,16 +69,11 @@ export default function Nav() {
         />
       )}
 
-      {inMainnet && mainnetShowValidators && (
-  
-        <>
-          <NavButton
-            to="/validators"
-            title="View All Validators"
-            label="Validators"
-          />
-        </>
-      )}
+      <NavButton
+        to="/validators"
+        title="View All Validators"
+        label="Validators"
+      />
 
       <NavButton to="/blocks" title="View Latest Blocks" label="Blocks" />
       <NetworkSelect />
