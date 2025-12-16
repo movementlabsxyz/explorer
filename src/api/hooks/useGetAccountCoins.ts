@@ -238,19 +238,19 @@ async function processCoinsData(
   const coinTypes = Array.from(coinBalanceMap.keys());
   if (coinTypes.length > 0) {
     try {
-      const metadataResponse = await state.sdk_v2_client.queryIndexer<{
-        fungible_asset_metadata: CoinMetadata[];
-      }>({
+      const metadataResponse = await state.sdk_v2_client.queryIndexer({
         query: {
           query: COIN_METADATA_QUERY,
           variables: {
             coin_types: coinTypes,
           },
         },
-      });
+      }) as {
+        fungible_asset_metadata: CoinMetadata[];
+      };
 
       const metadataMap = new Map<string, CoinMetadata>(
-        metadataResponse.fungible_asset_metadata.map((m) => [m.asset_type, m]),
+        metadataResponse.fungible_asset_metadata.map((m: CoinMetadata) => [m.asset_type, m] as [string, CoinMetadata]),
       );
 
       // Add v1 coin balances with metadata
