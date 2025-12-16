@@ -10,8 +10,8 @@ const COINS_QUERY = `
             limit: $limit
             offset: $offset
         ) {
-            amount
-            asset_type
+            amount_v2
+            asset_type_v2
             metadata {
                 name
                 decimals
@@ -61,8 +61,8 @@ export function useGetAccountCoinCount(address: string) {
 }
 
 type FaBalance = {
-  amount: number;
-  asset_type: string;
+  amount_v2: number;
+  asset_type_v2: string;
   metadata: {
     name: string;
     decimals: number;

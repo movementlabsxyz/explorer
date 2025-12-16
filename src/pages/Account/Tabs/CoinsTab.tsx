@@ -40,22 +40,26 @@ export default function CoinsTab({address}: TokenTabsProps) {
     return coins
       .filter((coin) => Boolean(coin.metadata))
       .map((coin): CoinDescriptionPlusAmount => {
-        const foundCoin = findCoinData(coinData?.data ?? [], coin.asset_type);
+        const foundCoin = findCoinData(coinData?.data ?? [], coin.asset_type_v2);
+
+        // Infer token standard from asset_type_v2 format
+        // If it contains "::", it's a Coin (v1), otherwise it's an FA address (v2)
+        const inferredTokenStandard = coin.asset_type_v2.includes("::") ? "v1" : "v2";
 
         if (!foundCoin) {
           // Minimally, return the information we do know
           return {
             name: coin.metadata.name,
-            amount: coin.amount,
+            amount: coin.amount_v2,
             decimals: coin.metadata.decimals,
             symbol: coin.metadata.symbol,
-            assetType: coin.asset_type,
-            assetVersion: coin.metadata.token_standard,
+            assetType: coin.asset_type_v2,
+            assetVersion: inferredTokenStandard,
             chainId: 0,
             tokenAddress:
-              coin.metadata.token_standard === "v1" ? coin.asset_type : null,
+              inferredTokenStandard === "v1" ? coin.asset_type_v2 : null,
             faAddress:
-              coin.metadata.token_standard === "v2" ? coin.asset_type : null,
+              inferredTokenStandard === "v2" ? coin.asset_type_v2 : null,
             bridge: null,
             panoraSymbol: null,
             logoUrl: "",
@@ -66,7 +70,7 @@ export default function CoinsTab({address}: TokenTabsProps) {
             panoraOrderIndex: 20000000,
             coinGeckoId: null,
             coinMarketCapId: null,
-            tokenStandard: coin.metadata.token_standard,
+            tokenStandard: inferredTokenStandard,
             usdPrice: null,
             panoraTags: [],
             panoraUI: false,
@@ -77,18 +81,18 @@ export default function CoinsTab({address}: TokenTabsProps) {
           // Otherwise, use the stuff found in the lookup
           return {
             ...foundCoin,
-            amount: coin.amount,
-            tokenStandard: coin.metadata.token_standard,
+            amount: coin.amount_v2,
+            tokenStandard: inferredTokenStandard,
             usdValue: foundCoin.usdPrice
               ? Math.round(
                   100 *
                     (Number.EPSILON +
-                      (parseFloat(foundCoin.usdPrice) * coin.amount) /
+                      (parseFloat(foundCoin.usdPrice) * coin.amount_v2) /
                         10 ** coin.metadata.decimals),
                 ) / 100
               : null,
-            assetType: coin.asset_type,
-            assetVersion: coin.metadata.token_standard,
+            assetType: coin.asset_type_v2,
+            assetVersion: inferredTokenStandard,
           };
         }
       })
