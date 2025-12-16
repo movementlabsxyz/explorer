@@ -208,7 +208,7 @@ async function processCoinsData(
   // All data from FA table should be marked as FA (is_v1_coin: false)
   for (const fa of faBalances) {
     // Check if this is v1 or v2 data
-    if (fa.amount_v2 !== null && fa.asset_type_v2 !== null) {
+    if (fa.amount_v2 != null && fa.asset_type_v2 != null) {
       // v2 FA
       result.push({
         amount_v2: fa.amount_v2,
@@ -216,7 +216,7 @@ async function processCoinsData(
         metadata: fa.metadata,
         is_v1_coin: false,
       });
-    } else if (fa.amount_v1 !== null && fa.asset_type_v1 !== null) {
+    } else if (fa.amount_v1 != null && fa.asset_type_v1 != null) {
       // v1 format stored in FA table (still an FA, not a Coin)
       result.push({
         amount_v2: fa.amount_v1,
@@ -250,7 +250,7 @@ async function processCoinsData(
       });
 
       const metadataMap = new Map<string, CoinMetadata>(
-        metadataResponse.fungible_asset_metadata.map((m: CoinMetadata) => [m.asset_type, m]),
+        metadataResponse.fungible_asset_metadata.map((m) => [m.asset_type, m]),
       );
 
       // Add v1 coin balances with metadata
