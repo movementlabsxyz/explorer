@@ -38,16 +38,18 @@ export default function CoinsTab({address}: TokenTabsProps) {
       return [];
     }
     return coins
-      .filter((coin) => Boolean(coin.metadata))
+      .filter((coin) => Boolean(coin.metadata) && Boolean(coin.asset_type_v2))
       .map((coin): CoinDescriptionPlusAmount => {
         const foundCoin = findCoinData(coinData?.data ?? [], coin.asset_type_v2);
 
-        // Infer token standard from asset_type_v2 format
-        // If it contains "::", it's a Coin (v1), otherwise it's an FA address (v2)
-        const inferredTokenStandard = coin.asset_type_v2.includes("::") ? "v1" : "v2";
+        // Determine token standard based on source:
+        // - is_v1_coin = true means from coin_balances table → "v1" (Coin)
+        // - is_v1_coin = false means from FA table → "v2" (Fungible Asset)
+        const inferredTokenStandard = coin.is_v1_coin ? "v1" : "v2";
+        const isV1Format = coin.asset_type_v2.includes("::");
 
         if (!foundCoin) {
-          // Minimally, return the information we do know
+          // Coin not found in list - just display as-is
           return {
             name: coin.metadata.name,
             amount: coin.amount_v2,
@@ -56,10 +58,8 @@ export default function CoinsTab({address}: TokenTabsProps) {
             assetType: coin.asset_type_v2,
             assetVersion: inferredTokenStandard,
             chainId: 0,
-            tokenAddress:
-              inferredTokenStandard === "v1" ? coin.asset_type_v2 : null,
-            faAddress:
-              inferredTokenStandard === "v2" ? coin.asset_type_v2 : null,
+            tokenAddress: isV1Format ? coin.asset_type_v2 : null,
+            faAddress: !isV1Format ? coin.asset_type_v2 : null,
             bridge: null,
             panoraSymbol: null,
             logoUrl: "",
@@ -79,6 +79,9 @@ export default function CoinsTab({address}: TokenTabsProps) {
           };
         } else {
           // Otherwise, use the stuff found in the lookup
+          // If this is FA (not v1 coin) but has v1 format asset_type, use FA address from lookup
+          const shouldUseFaAddress = !coin.is_v1_coin && isV1Format && foundCoin.faAddress;
+
           return {
             ...foundCoin,
             amount: coin.amount_v2,
@@ -91,8 +94,10 @@ export default function CoinsTab({address}: TokenTabsProps) {
                         10 ** coin.metadata.decimals),
                 ) / 100
               : null,
-            assetType: coin.asset_type_v2,
+            assetType: shouldUseFaAddress ? foundCoin.faAddress! : coin.asset_type_v2,
             assetVersion: inferredTokenStandard,
+            // If using FA address, clear tokenAddress
+            tokenAddress: shouldUseFaAddress ? null : foundCoin.tokenAddress,
           };
         }
       })

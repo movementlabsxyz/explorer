@@ -177,7 +177,7 @@ export const HardCodedCoins: Record<string, CoinDescription> = {
   "0x1::aptos_coin::AptosCoin": {
     chainId: 126,
     tokenAddress: "0x1::aptos_coin::AptosCoin",
-    faAddress: "0x1::aptos_coin::AptosCoin",
+    faAddress: "0x000000000000000000000000000000000000000000000000000000000000000a",
     name: "MOVE Coin",
     symbol: "MOVE",
     decimals: 8,
