@@ -24,29 +24,6 @@ const FA_BALANCES_QUERY = `
     }
 `;
 
-const COIN_BALANCES_QUERY = `
-    query CoinBalances($owner_address: String) {
-        coin_balances(
-            where: {owner_address: {_eq: $owner_address}}
-        ) {
-            coin_type
-            amount
-        }
-    }
-`;
-
-const COIN_METADATA_QUERY = `
-    query CoinMetadata($coin_types: [String!]) {
-        fungible_asset_metadata(
-            where: {asset_type: {_in: $coin_types}}
-        ) {
-            asset_type
-            name
-            decimals
-            symbol
-        }
-    }
-`;
 
 const COIN_COUNT_QUERY = `
     query GetFungibleAssetCount($address: String) {
@@ -99,18 +76,6 @@ type FaBalance = {
   };
 };
 
-type CoinBalance = {
-  coin_type: string;
-  amount: string;
-};
-
-type CoinMetadata = {
-  asset_type: string;
-  name: string;
-  decimals: number;
-  symbol: string;
-};
-
 export type UnifiedCoinBalance = {
   amount_v2: number;
   asset_type_v2: string;
@@ -139,11 +104,12 @@ export function useGetAccountCoins(address: string) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     queryFn: async (): Promise<any> => {
       let faBalances: FaBalance[] = [];
-      let coinBalances: CoinBalance[] = [];
 
-      // Fetch v2 FA balances
+      // Fetch balances from current_fungible_asset_balances table
+      // This table tracks BOTH v1 Coins and v2 FAs:
+      // - v1 Coins: have amount_v1/asset_type_v1 populated, token_standard = "v1"
+      // - v2 FAs: have amount_v2/asset_type_v2 populated, token_standard = "v2"
       if (!count.data || count.data === 0) {
-        // No FA balances, but still might have v1 coins
         faBalances = [];
       } else {
         // TODO: make the UI paginate this, rather than query all at once
@@ -171,119 +137,65 @@ export function useGetAccountCoins(address: string) {
         );
       }
 
-      // Fetch v1 coin balances separately (optional)
-      try {
-        const coinResponse = await state.sdk_v2_client.queryIndexer<{
-          coin_balances: CoinBalance[];
-        }>({
-          query: {
-            query: COIN_BALANCES_QUERY,
-            variables: {
-              owner_address: standardizedAddress,
-            },
-          },
-        });
-        coinBalances = coinResponse.coin_balances || [];
-      } catch (error) {
-        console.warn('Failed to fetch v1 coin balances:', error);
-        // Continue without v1 balances
-        coinBalances = [];
-      }
-
-      console.log('Fetched balances:', {faCount: faBalances.length, coinCount: coinBalances.length});
-
-      return processCoinsData(faBalances, coinBalances, state);
+      return processCoinsData(faBalances);
     },
   });
 }
 
-async function processCoinsData(
-  faBalances: FaBalance[],
-  coinBalances: CoinBalance[],
-  state: any,
-): Promise<UnifiedCoinBalance[]> {
+function processCoinsData(faBalances: FaBalance[]): UnifiedCoinBalance[] {
   const result: UnifiedCoinBalance[] = [];
 
-  // Process FA balance records - they can contain v1, v2, or BOTH
-  // All data from FA table should be marked as FA (is_v1_coin: false)
+  // Process balance records from current_fungible_asset_balances table.
+  // Each record can have:
+  // - amount_v1/asset_type_v1: Balance held in v1 CoinStore (coin format)
+  // - amount_v2/asset_type_v2: Balance held in v2 FungibleStore (FA format)
+  //
+  // Note: token_standard in metadata refers to the TOKEN's metadata standard,
+  // NOT whether the user holds it as Coin or FA. MOVE has token_standard "v1"
+  // but users can hold it in either CoinStore (v1) or FungibleStore (v2).
+  //
+  // We determine Coin vs FA based on WHICH amount field has the balance:
+  // - amount_v1 populated (non-null, non-zero) → v1 Coin (CoinStore)
+  // - amount_v2 populated → v2 FA (FungibleStore)
   for (const fa of faBalances) {
-    // A record can have both v1 and v2 data - handle both separately
-    if (fa.amount_v2 != null && fa.asset_type_v2 != null) {
-      // v2 FA
+    const hasV1Balance = fa.amount_v1 != null && fa.amount_v1 > 0;
+    const hasV2Balance = fa.amount_v2 != null && fa.amount_v2 > 0;
+
+    if (hasV2Balance && fa.asset_type_v2 != null) {
+      // User has FA balance (stored in FungibleStore)
       result.push({
-        amount_v2: fa.amount_v2,
+        amount_v2: fa.amount_v2!,
         asset_type_v2: fa.asset_type_v2,
         metadata: fa.metadata,
-        is_v1_coin: false,
+        is_v1_coin: false, // FA, not Coin
       });
     }
 
-    // Note: Using separate if (not else if) because a record can have BOTH
-    if (fa.amount_v1 != null && fa.asset_type_v1 != null) {
-      // v1 format stored in FA table (still an FA, not a Coin)
+    if (hasV1Balance && fa.asset_type_v1 != null) {
+      // User has Coin balance (stored in CoinStore)
       result.push({
-        amount_v2: fa.amount_v1,
+        amount_v2: fa.amount_v1!,
         asset_type_v2: fa.asset_type_v1,
         metadata: fa.metadata,
-        is_v1_coin: false, // Changed to false since it's from FA table
+        is_v1_coin: true, // Coin, not FA
       });
     }
-  }
 
-  // Group and aggregate v1 coin balances by coin_type
-  const coinBalanceMap = new Map<string, number>();
-  for (const coin of coinBalances) {
-    const currentAmount = coinBalanceMap.get(coin.coin_type) || 0;
-    coinBalanceMap.set(coin.coin_type, currentAmount + parseInt(coin.amount));
-  }
-
-  // Fetch metadata for v1 coins if needed
-  const coinTypes = Array.from(coinBalanceMap.keys());
-  if (coinTypes.length > 0) {
-    try {
-      const metadataResponse = await state.sdk_v2_client.queryIndexer({
-        query: {
-          query: COIN_METADATA_QUERY,
-          variables: {
-            coin_types: coinTypes,
-          },
-        },
-      }) as {
-        fungible_asset_metadata: CoinMetadata[];
-      };
-
-      const metadataMap = new Map<string, CoinMetadata>(
-        metadataResponse.fungible_asset_metadata.map((m: CoinMetadata) => [m.asset_type, m] as [string, CoinMetadata]),
-      );
-
-      // Add v1 coin balances with metadata
-      for (const [coinType, amount] of coinBalanceMap.entries()) {
-        const metadata: CoinMetadata | undefined = metadataMap.get(coinType);
+    // Handle edge case: record has asset info but zero/null in both amounts
+    // (shouldn't happen in practice, but fallback to v2 format if available)
+    if (!hasV1Balance && !hasV2Balance) {
+      if (fa.asset_type_v2 != null) {
         result.push({
-          amount_v2: amount,
-          asset_type_v2: coinType,
-          metadata: {
-            name: metadata ? metadata.name : (coinType.split("::").pop() || coinType),
-            decimals: metadata ? metadata.decimals : 8,
-            symbol: metadata ? metadata.symbol : "",
-            token_standard: "v1",
-          },
-          is_v1_coin: true,
+          amount_v2: fa.amount_v2 ?? 0,
+          asset_type_v2: fa.asset_type_v2,
+          metadata: fa.metadata,
+          is_v1_coin: false,
         });
-      }
-    } catch (error) {
-      console.error("Error fetching coin metadata:", error);
-      // Fallback: add coins without metadata
-      for (const [coinType, amount] of coinBalanceMap.entries()) {
+      } else if (fa.asset_type_v1 != null) {
         result.push({
-          amount_v2: amount,
-          asset_type_v2: coinType,
-          metadata: {
-            name: coinType.split("::").pop() || coinType,
-            decimals: 8,
-            symbol: "",
-            token_standard: "v1",
-          },
+          amount_v2: fa.amount_v1 ?? 0,
+          asset_type_v2: fa.asset_type_v1,
+          metadata: fa.metadata,
           is_v1_coin: true,
         });
       }
