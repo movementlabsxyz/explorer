@@ -204,10 +204,10 @@ async function processCoinsData(
 ): Promise<UnifiedCoinBalance[]> {
   const result: UnifiedCoinBalance[] = [];
 
-  // Process FA balance records - they can contain either v1 or v2 data
+  // Process FA balance records - they can contain v1, v2, or BOTH
   // All data from FA table should be marked as FA (is_v1_coin: false)
   for (const fa of faBalances) {
-    // Check if this is v1 or v2 data
+    // A record can have both v1 and v2 data - handle both separately
     if (fa.amount_v2 != null && fa.asset_type_v2 != null) {
       // v2 FA
       result.push({
@@ -216,7 +216,10 @@ async function processCoinsData(
         metadata: fa.metadata,
         is_v1_coin: false,
       });
-    } else if (fa.amount_v1 != null && fa.asset_type_v1 != null) {
+    }
+
+    // Note: Using separate if (not else if) because a record can have BOTH
+    if (fa.amount_v1 != null && fa.asset_type_v1 != null) {
       // v1 format stored in FA table (still an FA, not a Coin)
       result.push({
         amount_v2: fa.amount_v1,
