@@ -79,8 +79,8 @@ export default function CoinsTab({address}: TokenTabsProps) {
           };
         } else {
           // Otherwise, use the stuff found in the lookup
-          // If this is FA (not v1 coin) but has v1 format asset_type, use FA address from lookup
-          const shouldUseFaAddress = !coin.is_v1_coin && isV1Format && foundCoin.faAddress;
+          // For FA (v2), use faAddress; for Coin (v1), use tokenAddress
+          const isFA = !coin.is_v1_coin;
 
           return {
             ...foundCoin,
@@ -94,10 +94,11 @@ export default function CoinsTab({address}: TokenTabsProps) {
                         10 ** coin.metadata.decimals),
                 ) / 100
               : null,
-            assetType: shouldUseFaAddress ? foundCoin.faAddress! : coin.asset_type_v2,
+            assetType: coin.asset_type_v2,
             assetVersion: inferredTokenStandard,
-            // If using FA address, clear tokenAddress
-            tokenAddress: shouldUseFaAddress ? null : foundCoin.tokenAddress,
+            // For FA, clear tokenAddress so faAddress is used; for Coin, keep tokenAddress
+            tokenAddress: isFA ? null : foundCoin.tokenAddress,
+            faAddress: isFA ? (foundCoin.faAddress ?? coin.asset_type_v2) : foundCoin.faAddress,
           };
         }
       })

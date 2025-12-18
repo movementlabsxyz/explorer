@@ -2,6 +2,12 @@ import {useQuery} from "@tanstack/react-query";
 import {ResponseError} from "../client";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 import {standardizeAddress} from "../../utils";
+import {InputViewFunctionData} from "@aptos-labs/ts-sdk";
+import {nativeTokens} from "../../constants";
+
+// MOVE token identifiers for display
+const APTOS_COIN_TYPE = "0x1::aptos_coin::AptosCoin";
+const MOVE_FA_ADDRESS_SHORT = "0xa";
 
 const FA_BALANCES_QUERY = `
     query FungibleAssetBalances($owner_address: String, $limit: Int, $offset: Int) {
@@ -23,7 +29,6 @@ const FA_BALANCES_QUERY = `
         }
     }
 `;
-
 
 const COIN_COUNT_QUERY = `
     query GetFungibleAssetCount($address: String) {
@@ -100,19 +105,13 @@ export function useGetAccountCoins(address: string) {
 
   return useQuery<UnifiedCoinBalance[], ResponseError>({
     queryKey: ["coinQuery", address, count.data],
-    // TODO: Type
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    queryFn: async (): Promise<any> => {
+    enabled: count.data !== undefined, // Wait for count query to complete
+    queryFn: async (): Promise<UnifiedCoinBalance[]> => {
       let faBalances: FaBalance[] = [];
 
-      // Fetch balances from current_fungible_asset_balances table
-      // This table tracks BOTH v1 Coins and v2 FAs:
-      // - v1 Coins: have amount_v1/asset_type_v1 populated, token_standard = "v1"
-      // - v2 FAs: have amount_v2/asset_type_v2 populated, token_standard = "v2"
-      if (!count.data || count.data === 0) {
-        faBalances = [];
-      } else {
-        // TODO: make the UI paginate this, rather than query all at once
+      // Step 1: Fetch balances from GraphQL (current_fungible_asset_balances)
+      // This table has amount_v1 for v1 Coin balances, but v2 FA balances are NOT reliably indexed
+      if (count.data && count.data > 0) {
         const promises = [];
         for (let i = 0; i < count.data; i += PAGE_SIZE) {
           promises.push(
@@ -137,69 +136,100 @@ export function useGetAccountCoins(address: string) {
         );
       }
 
-      return processCoinsData(faBalances);
+      // Step 2: Get v2 FA MOVE balance from view function
+      // The indexer doesn't reliably return v2 FA balances, so we fetch directly from chain
+      let faMoveBal = 0;
+      try {
+        const payload: InputViewFunctionData = {
+          function: "0x1::primary_fungible_store::balance",
+          typeArguments: ["0x1::object::ObjectCore"],
+          functionArguments: [standardizedAddress, MOVE_FA_ADDRESS_SHORT],
+        };
+        const result = await state.sdk_v2_client.view<[string]>({payload});
+        faMoveBal = parseInt(result[0] || "0", 10);
+      } catch {
+        // User may not have FA MOVE, that's okay
+        faMoveBal = 0;
+      }
+
+      return processCoinsData(faBalances, faMoveBal);
     },
   });
 }
 
-function processCoinsData(faBalances: FaBalance[]): UnifiedCoinBalance[] {
+function processCoinsData(
+  faBalances: FaBalance[],
+  faMoveBalance: number,
+): UnifiedCoinBalance[] {
   const result: UnifiedCoinBalance[] = [];
 
-  // Process balance records from current_fungible_asset_balances table.
-  // Each record can have:
-  // - amount_v1/asset_type_v1: Balance held in v1 CoinStore (coin format)
-  // - amount_v2/asset_type_v2: Balance held in v2 FungibleStore (FA format)
+  // Process GraphQL balance records
+  // The GraphQL table (current_fungible_asset_balances) returns:
+  // - amount_v1: v1 Coin balance (stored in CoinStore) - this is reliable
+  // - amount_v2: v2 FA balance (stored in FungibleStore) - NOT reliable, often missing
   //
-  // Note: token_standard in metadata refers to the TOKEN's metadata standard,
-  // NOT whether the user holds it as Coin or FA. MOVE has token_standard "v1"
-  // but users can hold it in either CoinStore (v1) or FungibleStore (v2).
-  //
-  // We determine Coin vs FA based on WHICH amount field has the balance:
-  // - amount_v1 populated (non-null, non-zero) → v1 Coin (CoinStore)
-  // - amount_v2 populated → v2 FA (FungibleStore)
+  // So we only use amount_v1 from GraphQL for the v1 Coin balances,
+  // and use the view function result for v2 FA balances.
+
   for (const fa of faBalances) {
-    const hasV1Balance = fa.amount_v1 != null && fa.amount_v1 > 0;
-    const hasV2Balance = fa.amount_v2 != null && fa.amount_v2 > 0;
+    // Check if this is MOVE (native token) using the nativeTokens lookup
+    const isV1Move = fa.asset_type_v1 && fa.asset_type_v1 in nativeTokens;
+    const isV2Move = fa.asset_type_v2 && fa.asset_type_v2 in nativeTokens;
+    const isMoveAsset = isV1Move || isV2Move;
 
-    if (hasV2Balance && fa.asset_type_v2 != null) {
-      // User has FA balance (stored in FungibleStore)
-      result.push({
-        amount_v2: fa.amount_v2!,
-        asset_type_v2: fa.asset_type_v2,
-        metadata: fa.metadata,
-        is_v1_coin: false, // FA, not Coin
-      });
-    }
-
-    if (hasV1Balance && fa.asset_type_v1 != null) {
-      // User has Coin balance (stored in CoinStore)
-      result.push({
-        amount_v2: fa.amount_v1!,
-        asset_type_v2: fa.asset_type_v1,
-        metadata: fa.metadata,
-        is_v1_coin: true, // Coin, not FA
-      });
-    }
-
-    // Handle edge case: record has asset info but zero/null in both amounts
-    // (shouldn't happen in practice, but fallback to v2 format if available)
-    if (!hasV1Balance && !hasV2Balance) {
-      if (fa.asset_type_v2 != null) {
+    if (isMoveAsset) {
+      // For MOVE: only add the v1 Coin balance from GraphQL (amount_v1)
+      // The v2 FA balance will be added separately from the view function
+      // We skip any v2 data from GraphQL since it's not reliable
+      if (fa.amount_v1 != null && fa.amount_v1 > 0) {
         result.push({
-          amount_v2: fa.amount_v2 ?? 0,
+          amount_v2: fa.amount_v1,
+          asset_type_v2: APTOS_COIN_TYPE, // Coin uses 0x1::aptos_coin::AptosCoin
+          metadata: fa.metadata || {
+            name: "Move Coin",
+            decimals: 8,
+            symbol: "MOVE",
+            token_standard: "v1",
+          },
+          is_v1_coin: true, // This is v1 Coin (CoinStore)
+        });
+      }
+      // Note: We intentionally skip amount_v2 from GraphQL for MOVE
+      // because it's not reliable - we get it from view function instead
+    } else {
+      // For non-MOVE assets, use the data as-is from GraphQL
+      // Prefer v2 format if available, otherwise use v1
+      if (fa.amount_v2 != null && fa.amount_v2 > 0 && fa.asset_type_v2 != null) {
+        result.push({
+          amount_v2: fa.amount_v2,
           asset_type_v2: fa.asset_type_v2,
           metadata: fa.metadata,
           is_v1_coin: false,
         });
-      } else if (fa.asset_type_v1 != null) {
+      } else if (fa.amount_v1 != null && fa.amount_v1 > 0 && fa.asset_type_v1 != null) {
         result.push({
-          amount_v2: fa.amount_v1 ?? 0,
+          amount_v2: fa.amount_v1,
           asset_type_v2: fa.asset_type_v1,
           metadata: fa.metadata,
           is_v1_coin: true,
         });
       }
     }
+  }
+
+  // Add v2 FA MOVE balance from view function (if any)
+  if (faMoveBalance > 0) {
+    result.push({
+      amount_v2: faMoveBalance,
+      asset_type_v2: MOVE_FA_ADDRESS_SHORT, // Use "0xa" for FA display
+      metadata: {
+        name: "Move Coin",
+        decimals: 8,
+        symbol: "MOVE",
+        token_standard: "v2",
+      },
+      is_v1_coin: false, // This is v2 FA (FungibleStore)
+    });
   }
 
   return result;
