@@ -6,6 +6,36 @@ import {InputViewFunctionData} from "@aptos-labs/ts-sdk";
 import {useGetAccountResources} from "./useGetAccountResources";
 
 const MOVE_FA_ADDRESS_SHORT = "0xa";
+const MOVE_COIN_TYPE = "0x1::aptos_coin::AptosCoin";
+
+// GraphQL query for FA balances (used for non-MOVE FA tokens)
+const FA_BALANCES_QUERY = `
+    query FungibleAssetBalances($owner_address: String) {
+        current_fungible_asset_balances(
+            where: {owner_address: {_eq: $owner_address}}
+        ) {
+            amount
+            asset_type
+            metadata {
+                name
+                decimals
+                symbol
+                token_standard
+            }
+        }
+    }
+`;
+
+type FaBalance = {
+  amount: number;
+  asset_type: string;
+  metadata: {
+    name: string;
+    decimals: number;
+    symbol: string;
+    token_standard: string;
+  };
+};
 
 export type UnifiedCoinBalance = {
   amount_v2: number;
@@ -43,6 +73,7 @@ export function useGetAccountCoins(address: string) {
 
       if (!resources) return result;
 
+      // Step 1: Get v1 MOVE Coin from CoinStore resource (REST)
       const coinStoreResources = resources.filter((resource) =>
         resource.type.startsWith("0x1::coin::CoinStore<"),
       ) as CoinStoreResource[];
@@ -53,15 +84,16 @@ export function useGetAccountCoins(address: string) {
 
         const coinType = match[1];
         const balance = parseInt(resource.data.coin.value, 10);
+        const isMoveCoin = coinType === MOVE_COIN_TYPE;
 
         if (balance > 0) {
           result.push({
             amount_v2: balance,
             asset_type_v2: coinType,
             metadata: {
-              name: coinType.split("::").pop() || "Unknown",
+              name: isMoveCoin ? "Move Coin" : coinType.split("::").pop() || "Unknown",
               decimals: 8,
-              symbol: coinType.split("::").pop() || "Unknown",
+              symbol: isMoveCoin ? "MOVE" : coinType.split("::").pop() || "Unknown",
               token_standard: "v1",
             },
             is_v1_coin: true,
@@ -69,6 +101,7 @@ export function useGetAccountCoins(address: string) {
         }
       }
 
+      // Step 2: Get v2 MOVE FA from view function (REST)
       let faMoveBal = 0;
       try {
         const payload: InputViewFunctionData = {
@@ -94,6 +127,43 @@ export function useGetAccountCoins(address: string) {
           },
           is_v1_coin: false,
         });
+      }
+
+      // Step 3: Get non-MOVE FA tokens from GraphQL indexer
+      try {
+        const response = await state.sdk_v2_client.queryIndexer<{
+          current_fungible_asset_balances: FaBalance[];
+        }>({
+          query: {
+            query: FA_BALANCES_QUERY,
+            variables: {
+              owner_address: standardizedAddress,
+            },
+          },
+        });
+
+        const faBalances = response.current_fungible_asset_balances || [];
+
+        for (const fa of faBalances) {
+          // Skip MOVE tokens - we already handle them above via REST
+          const isMoveToken =
+            fa.asset_type === MOVE_COIN_TYPE ||
+            fa.asset_type === MOVE_FA_ADDRESS_SHORT ||
+            fa.asset_type?.startsWith("0x000000000000000000000000000000000000000000000000000000000000000a");
+
+          if (isMoveToken) continue;
+
+          if (fa.amount > 0 && fa.asset_type && fa.metadata) {
+            result.push({
+              amount_v2: fa.amount,
+              asset_type_v2: fa.asset_type,
+              metadata: fa.metadata,
+              is_v1_coin: false,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching FA balances from indexer:", error);
       }
 
       return result;
