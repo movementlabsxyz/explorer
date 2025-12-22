@@ -14,7 +14,7 @@ export default function ValidatorsMap() {
   const isOnMobile = !useMediaQuery(theme.breakpoints.up("md"));
   const backgroundColor = isDarkTheme ? grey[800] : grey[50];
 
-  const {validatorGeoMetric, validatorGeoGroups} = useGetValidatorSetGeoData();
+  const {validatorGeoMetric, validatorGeoGroups, hasGeoData} = useGetValidatorSetGeoData();
   const [isSkeletonLoading, setIsSkeletonLoading] = useState<boolean>(true);
   const {curEpoch} = useGetEpochTime();
   const {totalVotingPower} = useGetValidatorSet();
@@ -25,6 +25,11 @@ export default function ValidatorsMap() {
       setIsSkeletonLoading(false);
     }
   }, [curEpoch, totalVotingPower, numberOfActiveValidators]);
+
+  // Hide map if geo data (from JSON stats) is not available
+  if (!hasGeoData) {
+    return null;
+  }
 
   return (
     <SkeletonTheme baseColor={isDarkTheme ? grey[500] : undefined}>
