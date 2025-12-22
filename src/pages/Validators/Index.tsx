@@ -9,7 +9,7 @@ import { getStableID } from "../../utils";
 import { useLogEventWithBasic } from "../Account/hooks/useLogEventWithBasic";
 import PageHeader from "../layout/PageHeader";
 import { StakingBanner } from "./StakingBanner";
-//import { StakingPromo } from "./StakingPromo";
+import { StakingPromo } from "./StakingPromo";
 import ValidatorsPageTabs from "./Tabs";
 import ValidatorsMap from "./ValidatorsMap";
 
@@ -72,7 +72,7 @@ export default function ValidatorsPage() {
         <StakingBanner />
       ) : null}
       {state.network_name === "mainnet" && <ValidatorsMap />}
-      {/* <StakingPromo /> */}
+      <StakingPromo />
       <ValidatorsPageTabs />
     </Box>
   );
