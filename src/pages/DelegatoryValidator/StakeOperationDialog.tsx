@@ -422,7 +422,7 @@ function StakeOperationDialogContent({
       <DialogContent sx={{textAlign: "center"}}>
         <Typography variant="caption" color={grey[450]}>
           <div>
-            Please do your own research. Aptos Labs is not responsible for the
+            Please do your own research. Movement Network is not responsible for the
             security of your funds
           </div>
         </Typography>
@@ -474,7 +474,7 @@ function StakeOperationDialogContent({
       <DialogContent sx={{textAlign: "center"}}>
         <Typography variant="caption" color={grey[450]}>
           <div>
-            Please do your own research. Aptos Labs is not responsible for the
+            Please do your own research. Movement Network is not responsible for the
             security of your funds
           </div>
         </Typography>
