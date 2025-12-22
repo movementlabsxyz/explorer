@@ -1,9 +1,9 @@
-import React from "react";
 import {Grid2, Stack} from "@mui/material";
 import {ValidatorGeoMetric} from "../../../api/hooks/useGetValidatorsGeoData";
 import EpochSection from "./Epoch";
 import StakingSection from "./Staking";
 import NodeCountsSection from "./NodeCounts";
+import {Card} from "../../../components/Card";
 
 type MapMetricsProps = {
   validatorGeoMetric: ValidatorGeoMetric;
@@ -18,30 +18,34 @@ export default function MapMetrics({
   isSkeletonLoading,
   hasGeoData = false,
 }: MapMetricsProps) {
-  // When on mobile or no geo data, use horizontal grid layout
+  // When on mobile or no geo data, use horizontal grid layout with cards
   if (isOnMobile || !hasGeoData) {
     return (
       <Grid2
         container
         direction="row"
-        marginX={2}
-        marginTop={hasGeoData ? 0.5 : 4}
-        marginBottom={hasGeoData ? 4 : 8}
-        spacing={4}
-        justifyContent="flex-start"
+        spacing={2}
+        marginTop={hasGeoData ? 0.5 : 2}
+        marginBottom={hasGeoData ? 4 : 4}
       >
-        <Grid2 size={{xs: 12, sm: 4, md: 3}}>
-          <NodeCountsSection
-            validatorGeoMetric={validatorGeoMetric}
-            isSkeletonLoading={isSkeletonLoading}
-            hasGeoData={hasGeoData}
-          />
+        <Grid2 size={{xs: 12, sm: 6, md: 4}}>
+          <Card height={120}>
+            <NodeCountsSection
+              validatorGeoMetric={validatorGeoMetric}
+              isSkeletonLoading={isSkeletonLoading}
+              hasGeoData={hasGeoData}
+            />
+          </Card>
         </Grid2>
-        <Grid2 size={{xs: 12, sm: 4, md: 4}}>
-          <EpochSection isSkeletonLoading={isSkeletonLoading} />
+        <Grid2 size={{xs: 12, sm: 6, md: 4}}>
+          <Card height={120}>
+            <EpochSection isSkeletonLoading={isSkeletonLoading} />
+          </Card>
         </Grid2>
-        <Grid2 size={{xs: 12, sm: 4, md: 4}}>
-          <StakingSection isSkeletonLoading={isSkeletonLoading} />
+        <Grid2 size={{xs: 12, sm: 6, md: 4}}>
+          <Card height={120}>
+            <StakingSection isSkeletonLoading={isSkeletonLoading} />
+          </Card>
         </Grid2>
       </Grid2>
     );
