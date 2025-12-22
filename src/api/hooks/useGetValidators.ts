@@ -37,9 +37,12 @@ export interface GeoData {
 
 // JSON validator stats loading is disabled until Movement has validator stats JSON files available
 // This includes performance metrics: rewards_growth, last_epoch_performance, liveness, location_stats, etc.
+const EMPTY_VALIDATORS_RAW_DATA: ValidatorData[] = [];
+
 function useGetValidatorsRawData() {
   // Always return empty array - JSON stats loading is disabled
-  return { validatorsRawData: [] };
+  // Using a constant to avoid creating new array reference on each render
+  return { validatorsRawData: EMPTY_VALIDATORS_RAW_DATA };
 }
 
 export function useGetValidators() {
@@ -50,6 +53,7 @@ export function useGetValidators() {
 
   useEffect(() => {
     if (activeValidators.length > 0 && validatorsRawData.length > 0) {
+      // If we have JSON stats data, merge it with active validators
       const validatorsCopy = JSON.parse(JSON.stringify(validatorsRawData));
 
       validatorsCopy.forEach((validator: ValidatorData) => {
@@ -60,6 +64,20 @@ export function useGetValidators() {
       });
 
       setValidators(validatorsCopy);
+    } else if (activeValidators.length > 0) {
+      // Fallback: use active validators directly when JSON stats are not available
+      const validatorsFromSet: ValidatorData[] = activeValidators.map((v) => ({
+        owner_address: v.addr,
+        operator_address: v.addr, // Operator address not available in ValidatorSet, use owner as fallback
+        voting_power: v.voting_power,
+        governance_voting_record: "",
+        last_epoch: 0,
+        last_epoch_performance: "",
+        liveness: 0,
+        rewards_growth: 0,
+        apt_rewards_distributed: 0,
+      }));
+      setValidators(validatorsFromSet);
     }
   }, [activeValidators, validatorsRawData]);
 
