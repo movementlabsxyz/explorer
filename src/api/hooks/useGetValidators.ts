@@ -50,6 +50,7 @@ export function useGetValidators() {
   const { validatorsRawData } = useGetValidatorsRawData();
 
   const [validators, setValidators] = useState<ValidatorData[]>([]);
+  const [hasJsonStats, setHasJsonStats] = useState<boolean>(false);
 
   useEffect(() => {
     if (activeValidators.length > 0 && validatorsRawData.length > 0) {
@@ -64,6 +65,7 @@ export function useGetValidators() {
       });
 
       setValidators(validatorsCopy);
+      setHasJsonStats(true);
     } else if (activeValidators.length > 0) {
       // Fallback: use active validators directly when JSON stats are not available
       const validatorsFromSet: ValidatorData[] = activeValidators.map((v) => ({
@@ -78,8 +80,9 @@ export function useGetValidators() {
         apt_rewards_distributed: 0,
       }));
       setValidators(validatorsFromSet);
+      setHasJsonStats(false);
     }
   }, [activeValidators, validatorsRawData]);
 
-  return { validators };
+  return { validators, hasJsonStats };
 }
