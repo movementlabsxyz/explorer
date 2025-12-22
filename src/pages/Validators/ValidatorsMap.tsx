@@ -26,9 +26,18 @@ export default function ValidatorsMap() {
     }
   }, [curEpoch, totalVotingPower, numberOfActiveValidators]);
 
-  // Hide map if geo data (from JSON stats) is not available
+  // When no geo data, render a simpler layout without the map container styling
   if (!hasGeoData) {
-    return null;
+    return (
+      <SkeletonTheme baseColor={isDarkTheme ? grey[500] : undefined}>
+        <MapMetrics
+          validatorGeoMetric={validatorGeoMetric}
+          isOnMobile={isOnMobile}
+          isSkeletonLoading={isSkeletonLoading}
+          hasGeoData={hasGeoData}
+        />
+      </SkeletonTheme>
+    );
   }
 
   return (
@@ -46,6 +55,7 @@ export default function ValidatorsMap() {
             validatorGeoMetric={validatorGeoMetric}
             isOnMobile={isOnMobile}
             isSkeletonLoading={isSkeletonLoading}
+            hasGeoData={hasGeoData}
           />
         </Stack>
       ) : (
@@ -60,6 +70,7 @@ export default function ValidatorsMap() {
             validatorGeoMetric={validatorGeoMetric}
             isOnMobile={isOnMobile}
             isSkeletonLoading={isSkeletonLoading}
+            hasGeoData={hasGeoData}
           />
           <Map validatorGeoGroups={validatorGeoGroups} />
         </Stack>
