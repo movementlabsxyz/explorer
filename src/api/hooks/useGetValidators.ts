@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useGetValidatorSet } from "./useGetValidatorSet";
+import { useGlobalState } from "../../global-config/GlobalConfig";
 // import {Network} from "../../constants";
 // import {standardizeAddress} from "../../utils";
 
@@ -46,6 +47,7 @@ function useGetValidatorsRawData() {
 }
 
 export function useGetValidators() {
+  const [state] = useGlobalState();
   const { activeValidators } = useGetValidatorSet();
   const { validatorsRawData } = useGetValidatorsRawData();
 
@@ -68,21 +70,44 @@ export function useGetValidators() {
       setHasJsonStats(true);
     } else if (activeValidators.length > 0) {
       // Fallback: use active validators directly when JSON stats are not available
-      const validatorsFromSet: ValidatorData[] = activeValidators.map((v) => ({
-        owner_address: v.addr,
-        operator_address: v.addr, // Operator address not available in ValidatorSet, use owner as fallback
-        voting_power: v.voting_power,
-        governance_voting_record: "",
-        last_epoch: 0,
-        last_epoch_performance: "",
-        liveness: 0,
-        rewards_growth: 0,
-        apt_rewards_distributed: 0,
-      }));
-      setValidators(validatorsFromSet);
+      // Fetch operator addresses from StakePool resources
+      const fetchOperatorAddresses = async () => {
+        const validatorsWithOperators: ValidatorData[] = await Promise.all(
+          activeValidators.map(async (v) => {
+            let operatorAddress = v.addr; // Default to owner address
+            try {
+              const response = await state.aptos_client.getAccountResource(
+                v.addr,
+                "0x1::stake::StakePool"
+              );
+              if (response?.data) {
+                const data = response.data as { operator_address: string };
+                operatorAddress = data.operator_address;
+              }
+            } catch (e) {
+              // If fetch fails, use owner address as fallback
+              console.warn(`Failed to fetch StakePool for ${v.addr}:`, e);
+            }
+            return {
+              owner_address: v.addr,
+              operator_address: operatorAddress,
+              voting_power: v.voting_power,
+              governance_voting_record: "",
+              last_epoch: 0,
+              last_epoch_performance: "",
+              liveness: 0,
+              rewards_growth: 0,
+              apt_rewards_distributed: 0,
+            };
+          })
+        );
+        setValidators(validatorsWithOperators);
+      };
+
+      fetchOperatorAddresses();
       setHasJsonStats(false);
     }
-  }, [activeValidators, validatorsRawData]);
+  }, [activeValidators, validatorsRawData, state.aptos_client]);
 
   return { validators, hasJsonStats };
 }
