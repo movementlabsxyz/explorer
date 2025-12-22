@@ -25,8 +25,8 @@ export default function MapMetrics({
         container
         direction="row"
         marginX={2}
-        marginTop={hasGeoData ? 0.5 : 2}
-        marginBottom={hasGeoData ? 4 : 6}
+        marginTop={hasGeoData ? 0.5 : 4}
+        marginBottom={hasGeoData ? 4 : 8}
         spacing={4}
         justifyContent="flex-start"
       >
