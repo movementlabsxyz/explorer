@@ -18,7 +18,7 @@ export const bardockTestnetUrl =
     testnet: "",
     "bardock testnet": bardockTestnetUrl,
   devnet: "",
-    local: "http://localhost:30731",
+    local: "http://127.0.0.1:8080",
     mevmdevnet: "",
     custom: "",
   };
