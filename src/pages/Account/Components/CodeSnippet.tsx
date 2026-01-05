@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   CircularProgress,
@@ -115,7 +116,7 @@ function ExpandCode({sourceCode}: {sourceCode: string | undefined}) {
   );
 }
 
-/** Displays source code only if bytecode verification succeeds. */
+/** Displays source code with a warning if bytecode verification fails. */
 export function Code({
   bytecode,
   address,
@@ -168,11 +169,13 @@ export function Code({
   });
 
   // Check if code should be shown:
-  // - If verification is disabled (SERVICE_UNAVAILABLE) or loading, don't show code
-  // - If verified = true, show code
-  // - If verified = false or NOT_FOUND, don't show code
+  // - Show code if sourceCode exists (unless SERVICE_UNAVAILABLE or NOT_FOUND)
+  // - Show warning if verified = false
   const isVerified = verificationStatus?.verified === true;
-  const shouldShowCode = sourceCode && isVerified;
+  const hasVerificationFailure = verificationStatus?.verified === false;
+  const shouldShowCode = sourceCode && 
+    verificationError?.type !== ResponseErrorType.SERVICE_UNAVAILABLE &&
+    verificationError?.type !== ResponseErrorType.NOT_FOUND;
 
   // Determine the message to show when code is not displayed
   const getNoCodeMessage = () => {
@@ -267,27 +270,34 @@ export function Code({
           <Typography marginLeft={2}>Verifying source code...</Typography>
         </Box>
       ) : shouldShowCode ? (
-        <Box
-          sx={{
-            maxHeight: "100vh",
-            overflow: "auto",
-            borderRadius: 0,
-            backgroundColor: codeBlockColor,
-          }}
-          ref={codeBoxScrollRef}
-        >
-          <SyntaxHighlighter
-            language="rust"
-            key={theme.palette.mode}
-            style={
-              theme.palette.mode === "light" ? solarizedLight : solarizedDark
-            }
-            customStyle={{margin: 0, backgroundColor: "unset"}}
-            showLineNumbers
+        <Stack spacing={1}>
+          {hasVerificationFailure && (
+            <Alert severity="warning">
+              The deployer provided source code but it does not match the deployed bytecode. The displayed code may not accurately represent what is actually running on-chain.
+            </Alert>
+          )}
+          <Box
+            sx={{
+              maxHeight: "100vh",
+              overflow: "auto",
+              borderRadius: 0,
+              backgroundColor: codeBlockColor,
+            }}
+            ref={codeBoxScrollRef}
           >
-            {sourceCode}
-          </SyntaxHighlighter>
-        </Box>
+            <SyntaxHighlighter
+              language="rust"
+              key={theme.palette.mode}
+              style={
+                theme.palette.mode === "light" ? solarizedLight : solarizedDark
+              }
+              customStyle={{margin: 0, backgroundColor: "unset"}}
+              showLineNumbers
+            >
+              {sourceCode}
+            </SyntaxHighlighter>
+          </Box>
+        </Stack>
       ) : (
         <Box
           padding={2}
