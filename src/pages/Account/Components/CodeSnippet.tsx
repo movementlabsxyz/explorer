@@ -168,37 +168,12 @@ export function Code({
     }
   });
 
-  // Check if code should be shown:
-  // - Show code if sourceCode exists (unless SERVICE_UNAVAILABLE or NOT_FOUND)
-  // - Show warning if verified = false
+  // Always show code if sourceCode exists, with warnings when appropriate
   const isVerified = verificationStatus?.verified === true;
   const hasVerificationFailure = verificationStatus?.verified === false;
-  const shouldShowCode = sourceCode && 
-    verificationError?.type !== ResponseErrorType.SERVICE_UNAVAILABLE &&
-    verificationError?.type !== ResponseErrorType.NOT_FOUND;
-
-  // Determine the message to show when code is not displayed
-  const getNoCodeMessage = () => {
-    if (isVerificationLoading) {
-      return null; // Will show loading spinner
-    }
-    if (verificationError) {
-      if (verificationError.type === ResponseErrorType.SERVICE_UNAVAILABLE) {
-        return "Source code is not available because verification is not enabled on this node.";
-      }
-      if (verificationError.type === ResponseErrorType.NOT_FOUND) {
-        return "Source code is not available.";
-      }
-      return "Unable to verify source code.";
-    }
-    if (!sourceCode) {
-      return "Unfortunately, the source code cannot be shown because the package publisher has chosen not to make it available.";
-    }
-    if (verificationStatus?.verified === false) {
-      return "Source code is not available because it does not match the deployed bytecode.";
-    }
-    return "Source code is not available.";
-  };
+  const hasVerificationDisabled = verificationError?.type === ResponseErrorType.SERVICE_UNAVAILABLE;
+  const hasVerificationUnavailable = verificationError?.type === ResponseErrorType.NOT_FOUND;
+  const shouldShowCode = !!sourceCode;
 
   return (
     <Box>
@@ -219,7 +194,7 @@ export function Code({
             Code
           </Typography>
         </Stack>
-        {shouldShowCode && (
+        {sourceCode && (
           <Stack direction="row" spacing={2}>
             <StyledTooltip
               title="Code copied"
@@ -276,6 +251,11 @@ export function Code({
               The deployer provided source code but it does not match the deployed bytecode. The displayed code may not accurately represent what is actually running on-chain.
             </Alert>
           )}
+          {(hasVerificationDisabled || hasVerificationUnavailable) && (
+            <Alert severity="warning">
+              Source code verification is not available on this node. The displayed code was provided by the deployer and may not match the deployed bytecode.
+            </Alert>
+          )}
           <Box
             sx={{
               maxHeight: "100vh",
@@ -303,7 +283,9 @@ export function Code({
           padding={2}
           bgcolor={theme.palette.mode === "dark" ? grey[800] : grey[100]}
         >
-          <Typography color={grey[500]}>{getNoCodeMessage()}</Typography>
+          <Typography color={grey[500]}>
+            The source code cannot be shown because the package publisher has chosen not to make it available.
+          </Typography>
         </Box>
       )}
     </Box>
