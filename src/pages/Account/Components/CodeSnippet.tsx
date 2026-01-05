@@ -1,4 +1,12 @@
-import {Box, Button, Modal, Stack, Typography, useTheme} from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Modal,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import {ContentCopy, OpenInFull} from "@mui/icons-material";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {getPublicFunctionLineNumber, transformCode} from "../../../utils";
@@ -18,6 +26,8 @@ import {
 } from "../../../themes/colors/aptosColorPalette";
 import {useParams} from "react-router-dom";
 import {useLogEventWithBasic} from "../hooks/useLogEventWithBasic";
+import {useGetModuleVerificationStatus} from "../../../api/hooks/useGetModuleVerificationStatus";
+import {ResponseErrorType} from "../../../api/client";
 
 function useStartingLineNumber(sourceCode?: string) {
   const functionToHighlight = useParams().selectedFnName;
@@ -105,15 +115,36 @@ function ExpandCode({sourceCode}: {sourceCode: string | undefined}) {
   );
 }
 
-export function Code({bytecode}: {bytecode: string}) {
+/** Displays source code only if bytecode verification succeeds. */
+export function Code({
+  bytecode,
+  address,
+  moduleName,
+}: {
+  bytecode: string;
+  address?: string;
+  moduleName?: string;
+}) {
   const {selectedModuleName} = useParams();
   const logEvent = useLogEventWithBasic();
+  const theme = useTheme();
+
+  // Use the module name from props or from URL params
+  const moduleNameToVerify = moduleName || selectedModuleName || "";
+
+  // Query verification status
+  const {
+    data: verificationStatus,
+    isLoading: isVerificationLoading,
+    error: verificationError,
+  } = useGetModuleVerificationStatus(address || "", moduleNameToVerify, {
+    enabled: !!address && !!moduleNameToVerify,
+  });
 
   const TOOLTIP_TIME = 2000; // 2s
 
   const sourceCode = bytecode === "0x" ? undefined : transformCode(bytecode);
 
-  const theme = useTheme();
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
 
   async function copyCode() {
@@ -136,6 +167,36 @@ export function Code({bytecode}: {bytecode: string}) {
     }
   });
 
+  // Check if code should be shown:
+  // - If verification is disabled (SERVICE_UNAVAILABLE) or loading, don't show code
+  // - If verified = true, show code
+  // - If verified = false or NOT_FOUND, don't show code
+  const isVerified = verificationStatus?.verified === true;
+  const shouldShowCode = sourceCode && isVerified;
+
+  // Determine the message to show when code is not displayed
+  const getNoCodeMessage = () => {
+    if (isVerificationLoading) {
+      return null; // Will show loading spinner
+    }
+    if (verificationError) {
+      if (verificationError.type === ResponseErrorType.SERVICE_UNAVAILABLE) {
+        return "Source code is not available because verification is not enabled on this node.";
+      }
+      if (verificationError.type === ResponseErrorType.NOT_FOUND) {
+        return "Source code is not available.";
+      }
+      return "Unable to verify source code.";
+    }
+    if (!sourceCode) {
+      return "Unfortunately, the source code cannot be shown because the package publisher has chosen not to make it available.";
+    }
+    if (verificationStatus?.verified === false) {
+      return "Source code is not available because it does not match the deployed bytecode.";
+    }
+    return "Source code is not available.";
+  };
+
   return (
     <Box>
       <Stack
@@ -154,9 +215,8 @@ export function Code({bytecode}: {bytecode: string}) {
           <Typography fontSize={20} fontWeight={700}>
             Code
           </Typography>
-          <StyledLearnMoreTooltip text="Please be aware that this code was provided by the owner and it could be different to the real code on blockchain. We cannot verify it." />
         </Stack>
-        {sourceCode && (
+        {shouldShowCode && (
           <Stack direction="row" spacing={2}>
             <StyledTooltip
               title="Code copied"
@@ -196,24 +256,17 @@ export function Code({bytecode}: {bytecode: string}) {
           </Stack>
         )}
       </Stack>
-      {sourceCode && (
-        <Typography
-          variant="body1"
-          fontSize={14}
-          fontWeight={400}
-          marginBottom={"16px"}
-          color={theme.palette.mode === "dark" ? grey[400] : grey[600]}
+      {isVerificationLoading ? (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          padding={4}
         >
-          The source code is plain text uploaded by the deployer, which can be
-          different from the actual bytecode.
-        </Typography>
-      )}
-      {!sourceCode ? (
-        <Box>
-          Unfortunately, the source code cannot be shown because the package
-          publisher has chosen not to make it available
+          <CircularProgress size={24} />
+          <Typography marginLeft={2}>Verifying source code...</Typography>
         </Box>
-      ) : (
+      ) : shouldShowCode ? (
         <Box
           sx={{
             maxHeight: "100vh",
@@ -234,6 +287,13 @@ export function Code({bytecode}: {bytecode: string}) {
           >
             {sourceCode}
           </SyntaxHighlighter>
+        </Box>
+      ) : (
+        <Box
+          padding={2}
+          bgcolor={theme.palette.mode === "dark" ? grey[800] : grey[100]}
+        >
+          <Typography color={grey[500]}>{getNoCodeMessage()}</Typography>
         </Box>
       )}
     </Box>

@@ -191,7 +191,7 @@ function ModuleContent({address, moduleName, bytecode}: ModuleContentProps) {
     >
       <ModuleHeader address={address} moduleName={moduleName} />
       <Divider />
-      <Code bytecode={bytecode} />
+      <Code bytecode={bytecode} address={address} moduleName={moduleName} />
       <Divider />
       <ABI address={address} moduleName={moduleName} />
     </Stack>

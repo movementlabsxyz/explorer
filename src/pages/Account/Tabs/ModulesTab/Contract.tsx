@@ -158,7 +158,11 @@ function Contract({
           {module && fn && selectedModule && (
             <>
               <Divider sx={{margin: "24px 0"}} />
-              <Code bytecode={selectedModule?.source} />
+              <Code
+                bytecode={selectedModule?.source}
+                address={address}
+                moduleName={selectedModuleName}
+              />
             </>
           )}
         </Box>
