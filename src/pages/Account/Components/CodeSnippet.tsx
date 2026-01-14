@@ -173,6 +173,7 @@ export function Code({
   const hasVerificationFailure = verificationStatus?.verified === false;
   const hasVerificationDisabled = verificationError?.type === ResponseErrorType.SERVICE_UNAVAILABLE;
   const hasVerificationUnavailable = verificationError?.type === ResponseErrorType.NOT_FOUND;
+  const hasCompilationError = verificationError?.type === ResponseErrorType.COMPILATION_ERROR;
   const shouldShowCode = !!sourceCode;
 
   return (
@@ -247,12 +248,17 @@ export function Code({
       ) : shouldShowCode ? (
         <Stack spacing={1}>
           {hasVerificationFailure && (
-            <Alert severity="warning">
+            <Alert severity="error">
               The deployer provided source code but it does not match the deployed bytecode. The displayed code may not accurately represent what is actually running on-chain.
             </Alert>
           )}
-          {(hasVerificationDisabled || hasVerificationUnavailable) && (
+          {hasCompilationError && (
             <Alert severity="warning">
+              This contract cannot be verified because it uses dependencies that are not part of the standard Aptos framework. The displayed code was provided by the deployer and may not match the deployed bytecode.
+            </Alert>
+          )}
+          {(hasVerificationDisabled || hasVerificationUnavailable) && (
+            <Alert severity="info">
               Source code verification is not available on this node. The displayed code was provided by the deployer and may not match the deployed bytecode.
             </Alert>
           )}

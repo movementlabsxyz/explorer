@@ -28,7 +28,8 @@ export function useGetModuleVerificationStatus(
       // Don't retry for expected error types
       if (
         error.type === ResponseErrorType.NOT_FOUND ||
-        error.type === ResponseErrorType.SERVICE_UNAVAILABLE
+        error.type === ResponseErrorType.SERVICE_UNAVAILABLE ||
+        error.type === ResponseErrorType.COMPILATION_ERROR
       ) {
         return false;
       }

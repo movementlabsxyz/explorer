@@ -4,6 +4,7 @@ export enum ResponseErrorType {
   UNHANDLED = "Unhandled",
   TOO_MANY_REQUESTS = "Too Many Requests",
   SERVICE_UNAVAILABLE = "Service Unavailable",
+  COMPILATION_ERROR = "Compilation Error",
 }
 
 export type ResponseError = {type: ResponseErrorType; message?: string};
@@ -42,7 +43,12 @@ export interface ModuleVerificationStatusResponse {
   verified: boolean;
 }
 
-/** Fetch module verification status. Throws NOT_FOUND (404) or SERVICE_UNAVAILABLE (503). */
+/** Fetch module verification status. 
+ * Throws:
+ * - NOT_FOUND (404) - no source code available
+ * - SERVICE_UNAVAILABLE (503) - verification disabled on node
+ * - COMPILATION_ERROR (422) - cannot verify (e.g., unsupported dependencies)
+ */
 export async function getModuleVerificationStatus(
   nodeUrl: string,
   address: string,
@@ -60,6 +66,11 @@ export async function getModuleVerificationStatus(
   if (!response.ok) {
     if (response.status === 404) {
       throw {type: ResponseErrorType.NOT_FOUND};
+    }
+    if (response.status === 422) {
+      // Compilation error - can't verify, but not suspicious
+      const errorData = await response.json().catch(() => ({}));
+      throw {type: ResponseErrorType.COMPILATION_ERROR, message: errorData.message};
     }
     if (response.status === 503) {
       throw {type: ResponseErrorType.SERVICE_UNAVAILABLE};
