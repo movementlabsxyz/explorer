@@ -247,6 +247,11 @@ export function Code({
         </Box>
       ) : shouldShowCode ? (
         <Stack spacing={1}>
+          {isVerified && (
+            <Alert severity="success">
+              Source code verified: the displayed code matches the deployed bytecode.
+            </Alert>
+          )}
           {hasVerificationFailure && (
             <Alert severity="error">
               The deployer provided source code but it does not match the deployed bytecode. The displayed code may not accurately represent what is actually running on-chain.
