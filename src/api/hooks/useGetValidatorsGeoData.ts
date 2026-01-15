@@ -21,7 +21,7 @@ export interface ValidatorGeoGroup {
 }
 
 export function useGetValidatorSetGeoData() {
-  const {validators, hasJsonStats} = useGetValidators();
+  const {validators} = useGetValidators();
   const [validatorGeoGroups, setValidatorGeoGroups] = useState<
     ValidatorGeoGroup[]
   >([]);
@@ -31,8 +31,8 @@ export function useGetValidatorSetGeoData() {
       countryCount: 0,
       cityCount: 0,
     });
-  // Geo data requires JSON stats with location_stats
-  const hasGeoData = hasJsonStats;
+  // Track if we actually have geo data (validators with location_stats)
+  const [hasGeoData, setHasGeoData] = useState<boolean>(false);
 
   useMemo(() => {
     const groups: ValidatorGeoGroup[] = validators.reduce(
@@ -101,6 +101,8 @@ export function useGetValidatorSetGeoData() {
       countryCount: groups.length,
       cityCount: totalCityCount,
     });
+    // Only set hasGeoData to true if we actually have geo groups with data
+    setHasGeoData(groups.length > 0);
   }, [validators]);
 
   return {validatorGeoGroups, validatorGeoMetric, hasGeoData};
