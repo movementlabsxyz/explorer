@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useGetValidatorSet } from "./useGetValidatorSet";
 import { useGlobalState } from "../../global-config/GlobalConfig";
-// import {Network} from "../../constants";
-// import {standardizeAddress} from "../../utils";
 
-// const MAINNET_VALIDATORS_DATA_URL =
-//   "https://storage.googleapis.com/aptos-mainnet/explorer/validator_stats_v2.json?cache-version=0";
+const MAINNET_VALIDATORS_DATA_URL =
+  "https://storage.googleapis.com/explorer_stats/mainnet_epoch_stats_new_testing.json?cache-version=0";
 
 // const TESTNET_VALIDATORS_DATA_URL =
 //   "https://storage.googleapis.com/aptos-testnet/explorer/validator_stats_v2.json?cache-version=0";
@@ -36,14 +34,40 @@ export interface GeoData {
   epoch: number;
 }
 
-// JSON validator stats loading is disabled until Movement has validator stats JSON files available
-// This includes performance metrics: rewards_growth, last_epoch_performance, liveness, location_stats, etc.
-const EMPTY_VALIDATORS_RAW_DATA: ValidatorData[] = [];
-
 function useGetValidatorsRawData() {
-  // Always return empty array - JSON stats loading is disabled
-  // Using a constant to avoid creating new array reference on each render
-  return { validatorsRawData: EMPTY_VALIDATORS_RAW_DATA };
+  const [state] = useGlobalState();
+  const [validatorsRawData, setValidatorsRawData] = useState<ValidatorData[]>([]);
+
+  useEffect(() => {
+    // Only fetch JSON stats for mainnet
+    if (state.network_name !== "mainnet") {
+      setValidatorsRawData([]);
+      return;
+    }
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch(MAINNET_VALIDATORS_DATA_URL);
+        const data: ValidatorData[] = await response.json();
+
+        // Filter out validators with null/missing last_epoch_performance
+        const filteredData = data.filter(
+          (validator) => validator.last_epoch_performance !== null &&
+                         validator.last_epoch_performance !== undefined &&
+                         validator.last_epoch_performance !== ""
+        );
+
+        setValidatorsRawData(filteredData);
+      } catch (e) {
+        console.error("Failed to fetch validator stats:", e);
+        setValidatorsRawData([]);
+      }
+    };
+
+    fetchData();
+  }, [state.network_name]);
+
+  return { validatorsRawData };
 }
 
 export function useGetValidators() {
