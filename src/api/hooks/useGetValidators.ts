@@ -47,12 +47,9 @@ function useGetValidatorsRawData() {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(MAINNET_VALIDATORS_DATA_URL, {
-          cache: "no-store",
-          headers: {
-            "Cache-Control": "no-cache",
-          },
-        });
+        // Add timestamp to bust cache without triggering CORS preflight
+        const url = `${MAINNET_VALIDATORS_DATA_URL}?t=${Date.now()}`;
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
