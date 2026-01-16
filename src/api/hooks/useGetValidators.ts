@@ -3,7 +3,7 @@ import { useGetValidatorSet } from "./useGetValidatorSet";
 import { useGlobalState } from "../../global-config/GlobalConfig";
 
 const MAINNET_VALIDATORS_DATA_URL =
-  "https://storage.googleapis.com/explorer_stats/mainnet_epoch_stats_new_testing.json?cache-version=0";
+  "https://storage.googleapis.com/explorer_stats/mainnet_epoch_stats_new_testing.json";
 
 // const TESTNET_VALIDATORS_DATA_URL =
 //   "https://storage.googleapis.com/aptos-testnet/explorer/validator_stats_v2.json?cache-version=0";
@@ -47,7 +47,17 @@ function useGetValidatorsRawData() {
 
     const fetchData = async () => {
       try {
-        const response = await fetch(MAINNET_VALIDATORS_DATA_URL);
+        const response = await fetch(MAINNET_VALIDATORS_DATA_URL, {
+          cache: "no-store",
+          headers: {
+            "Cache-Control": "no-cache",
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
         const data: ValidatorData[] = await response.json();
 
         // Filter out validators with null/missing last_epoch_performance
@@ -79,6 +89,9 @@ export function useGetValidators() {
   const [hasJsonStats, setHasJsonStats] = useState<boolean>(false);
 
   useEffect(() => {
+    // Track if this effect instance is still current (for race condition prevention)
+    let isCurrent = true;
+
     if (activeValidators.length > 0 && validatorsRawData.length > 0) {
       // If we have JSON stats data, merge it with active validators
       const validatorsCopy = JSON.parse(JSON.stringify(validatorsRawData));
@@ -125,12 +138,20 @@ export function useGetValidators() {
             };
           })
         );
-        setValidators(validatorsWithOperators);
+        // Only update state if this effect instance is still current
+        if (isCurrent) {
+          setValidators(validatorsWithOperators);
+          setHasJsonStats(false);
+        }
       };
 
       fetchOperatorAddresses();
-      setHasJsonStats(false);
     }
+
+    // Cleanup: mark this effect instance as stale when it re-runs
+    return () => {
+      isCurrent = false;
+    };
   }, [activeValidators, validatorsRawData, state.aptos_client]);
 
   return { validators, hasJsonStats };
