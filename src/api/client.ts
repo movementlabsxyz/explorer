@@ -43,9 +43,9 @@ export interface ModuleVerificationStatusResponse {
   verified: boolean;
 }
 
-/** Fetch module verification status. 
+/** Fetch module verification status for a specific contract version (upgrade_number).
  * Throws:
- * - NOT_FOUND (404) - no source code available
+ * - NOT_FOUND (404) - no source code available, or contract upgraded (refresh page)
  * - SERVICE_UNAVAILABLE (503) - verification disabled on node
  * - COMPILATION_ERROR (422) - cannot verify (e.g., unsupported dependencies)
  */
@@ -53,9 +53,11 @@ export async function getModuleVerificationStatus(
   nodeUrl: string,
   address: string,
   moduleName: string,
+  upgradeNumber?: number,
 ): Promise<ModuleVerificationStatusResponse> {
-  const url = `${nodeUrl}/v1/accounts/${address}/modules/${moduleName}/verification_status`;
-  
+  const params = upgradeNumber != null ? `?upgrade_number=${upgradeNumber}` : "";
+  const url = `${nodeUrl}/v1/accounts/${address}/modules/${moduleName}/verification_status${params}`;
+
   const response = await fetch(url, {
     method: "GET",
     headers: {

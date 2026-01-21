@@ -121,10 +121,12 @@ export function Code({
   bytecode,
   address,
   moduleName,
+  upgradeNumber,
 }: {
   bytecode: string;
   address?: string;
   moduleName?: string;
+  upgradeNumber?: number;
 }) {
   const {selectedModuleName} = useParams();
   const logEvent = useLogEventWithBasic();
@@ -133,13 +135,14 @@ export function Code({
   // Use the module name from props or from URL params
   const moduleNameToVerify = moduleName || selectedModuleName || "";
 
-  // Query verification status
+  // Query verification for this contract version (upgrade_number)
   const {
     data: verificationStatus,
     isLoading: isVerificationLoading,
     error: verificationError,
   } = useGetModuleVerificationStatus(address || "", moduleNameToVerify, {
     enabled: !!address && !!moduleNameToVerify,
+    upgradeNumber,
   });
 
   const TOOLTIP_TIME = 2000; // 2s

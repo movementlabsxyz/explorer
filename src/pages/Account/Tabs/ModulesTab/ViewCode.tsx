@@ -39,14 +39,20 @@ interface ModuleContentProps {
   address: string;
   moduleName: string;
   bytecode: string;
+  upgradeNumber?: number;
 }
 
 function ViewCode({address, isObject}: {address: string; isObject: boolean}) {
   const sortedPackages: PackageMetadata[] = useGetAccountPackages(address);
-
   const navigate = useNavigate();
-
   const selectedModuleName = useParams().selectedModuleName ?? "";
+
+  const selectedPackage = sortedPackages.find((p) =>
+    p.modules.some((m) => m.name === selectedModuleName),
+  );
+  const upgradeNumber =
+    selectedPackage != null ? Number(selectedPackage.upgrade_number) : undefined;
+
   useEffect(() => {
     if (
       !selectedModuleName &&
@@ -98,6 +104,7 @@ function ViewCode({address, isObject}: {address: string; isObject: boolean}) {
             address={address}
             moduleName={selectedModuleName}
             bytecode={selectedModule.source}
+            upgradeNumber={upgradeNumber}
           />
         )}
       </Grid2>
@@ -179,7 +186,12 @@ function ModuleSidebar({
   );
 }
 
-function ModuleContent({address, moduleName, bytecode}: ModuleContentProps) {
+function ModuleContent({
+  address,
+  moduleName,
+  bytecode,
+  upgradeNumber,
+}: ModuleContentProps) {
   const theme = useTheme();
   return (
     <Stack
@@ -191,7 +203,12 @@ function ModuleContent({address, moduleName, bytecode}: ModuleContentProps) {
     >
       <ModuleHeader address={address} moduleName={moduleName} />
       <Divider />
-      <Code bytecode={bytecode} address={address} moduleName={moduleName} />
+      <Code
+        bytecode={bytecode}
+        address={address}
+        moduleName={moduleName}
+        upgradeNumber={upgradeNumber}
+      />
       <Divider />
       <ABI address={address} moduleName={moduleName} />
     </Stack>

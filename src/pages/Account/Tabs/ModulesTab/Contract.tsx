@@ -72,6 +72,11 @@ function Contract({
   const {data, isLoading, error} = useGetAccountModules(address);
   const {selectedModuleName, selectedFnName} = useParams();
   const sortedPackages: PackageMetadata[] = useGetAccountPackages(address);
+  const selectedPackage = sortedPackages.find((p) =>
+    p.modules.some((m) => m.name === selectedModuleName),
+  );
+  const upgradeNumber =
+    selectedPackage != null ? Number(selectedPackage.upgrade_number) : undefined;
   const selectedModule = sortedPackages
     .flatMap((pkg) => pkg.modules)
     .find((module) => module.name === selectedModuleName);
@@ -162,6 +167,7 @@ function Contract({
                 bytecode={selectedModule?.source}
                 address={address}
                 moduleName={selectedModuleName}
+                upgradeNumber={upgradeNumber}
               />
             </>
           )}

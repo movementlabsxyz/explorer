@@ -7,22 +7,28 @@ import {
 } from "../client";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 
-/** Hook to query module bytecode verification status. */
+/** Hook to query module bytecode verification status for a contract version (upgrade_number). */
 export function useGetModuleVerificationStatus(
   address: string,
   moduleName: string,
-  options?: {enabled?: boolean},
+  options?: {enabled?: boolean; upgradeNumber?: number},
 ): UseQueryResult<ModuleVerificationStatusResponse, ResponseError> {
   const [state] = useGlobalState();
+  const {upgradeNumber, ...rest} = options ?? {};
 
   return useQuery<ModuleVerificationStatusResponse, ResponseError>({
     queryKey: [
       "moduleVerificationStatus",
-      {address, moduleName},
+      {address, moduleName, upgradeNumber},
       state.network_value,
     ],
     queryFn: () =>
-      getModuleVerificationStatus(state.network_value, address, moduleName),
+      getModuleVerificationStatus(
+        state.network_value,
+        address,
+        moduleName,
+        upgradeNumber,
+      ),
     refetchOnWindowFocus: false,
     retry: (failureCount, error) => {
       // Don't retry for expected error types
@@ -35,7 +41,7 @@ export function useGetModuleVerificationStatus(
       }
       return failureCount < 2;
     },
-    ...options,
+    ...rest,
   });
 }
 
