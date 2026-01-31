@@ -266,20 +266,21 @@ function DesktopFooter({
         width: "100%",
         backgroundColor: "#000",
         px: 6,
-        py: 6,
+        py: 10,
       }}
     >
-      {/* Heading at top */}
+      {/* Heading centered */}
       {showHeading && (
         <Typography
           sx={{
-            mb: 5,
+            mb: 8,
             fontFamily: "'TWKEverett', sans-serif",
             fontSize: "2rem",
             fontWeight: 900,
             textTransform: "uppercase",
             lineHeight: 1.5,
             color: "#fff",
+            textAlign: "center",
           }}
         >
           {heading}
@@ -290,7 +291,7 @@ function DesktopFooter({
       <Box
         sx={{
           display: "flex",
-          alignItems: "flex-start",
+          alignItems: "center",
           justifyContent: "space-between",
         }}
       >
@@ -334,7 +335,7 @@ function DesktopFooter({
       {/* Copyright at bottom center */}
       <Typography
         sx={{
-          mt: 5,
+          mt: 8,
           textAlign: "center",
           fontSize: "1rem",
           color: "rgba(255, 255, 255, 0.6)",
@@ -485,7 +486,7 @@ export default function Footer({
   };
 
   return (
-    <Box component="footer" sx={{width: "100%", mt: 8}}>
+    <Box component="footer" sx={{width: "100%"}}>
       {isMobile ? (
         <MobileFooter {...sharedProps} />
       ) : (
