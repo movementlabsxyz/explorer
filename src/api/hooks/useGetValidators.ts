@@ -3,7 +3,7 @@ import { useGetValidatorSet } from "./useGetValidatorSet";
 import { useGlobalState } from "../../global-config/GlobalConfig";
 
 const MAINNET_VALIDATORS_DATA_URL =
-  "https://storage.googleapis.com/explorer_stats/mainnet_epoch_stats_new_testing.json";
+  "https://storage.googleapis.com/explorer_stats/mainnet_epoch_stats.json";
 
 // const TESTNET_VALIDATORS_DATA_URL =
 //   "https://storage.googleapis.com/aptos-testnet/explorer/validator_stats_v2.json?cache-version=0";
