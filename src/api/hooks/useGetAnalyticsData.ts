@@ -2,7 +2,7 @@ import {useEffect, useState} from "react";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 
 export const BARDOCK_ANALYTICS_DATA_URL =
-  "https://storage.googleapis.com/explorer_stats/chain_stats_bardock_v2.json";
+  "https://storage.googleapis.com/explorer_stats/chain_stats_testnet_v2.json";
 
 export const ANALYTICS_DATA_URL =
   "https://storage.googleapis.com/explorer_stats/chain_stats_mainnet_v2.json";
