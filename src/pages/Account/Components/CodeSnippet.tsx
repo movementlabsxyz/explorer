@@ -1,4 +1,13 @@
-import {Box, Button, Modal, Stack, Typography, useTheme} from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  CircularProgress,
+  Modal,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/material";
 import {ContentCopy, OpenInFull} from "@mui/icons-material";
 import SyntaxHighlighter from "react-syntax-highlighter";
 import {getPublicFunctionLineNumber, transformCode} from "../../../utils";
@@ -18,6 +27,8 @@ import {
 } from "../../../themes/colors/aptosColorPalette";
 import {useParams} from "react-router-dom";
 import {useLogEventWithBasic} from "../hooks/useLogEventWithBasic";
+import {useGetModuleVerificationStatus} from "../../../api/hooks/useGetModuleVerificationStatus";
+import {ResponseErrorType} from "../../../api/client";
 
 function useStartingLineNumber(sourceCode?: string) {
   const functionToHighlight = useParams().selectedFnName;
@@ -105,15 +116,39 @@ function ExpandCode({sourceCode}: {sourceCode: string | undefined}) {
   );
 }
 
-export function Code({bytecode}: {bytecode: string}) {
+/** Displays source code with a warning if bytecode verification fails. */
+export function Code({
+  bytecode,
+  address,
+  moduleName,
+  upgradeNumber,
+}: {
+  bytecode: string;
+  address?: string;
+  moduleName?: string;
+  upgradeNumber?: number;
+}) {
   const {selectedModuleName} = useParams();
   const logEvent = useLogEventWithBasic();
+  const theme = useTheme();
+
+  // Use the module name from props or from URL params
+  const moduleNameToVerify = moduleName || selectedModuleName || "";
+
+  // Query verification for this contract version (upgrade_number)
+  const {
+    data: verificationStatus,
+    isLoading: isVerificationLoading,
+    error: verificationError,
+  } = useGetModuleVerificationStatus(address || "", moduleNameToVerify, {
+    enabled: !!address && !!moduleNameToVerify,
+    upgradeNumber,
+  });
 
   const TOOLTIP_TIME = 2000; // 2s
 
   const sourceCode = bytecode === "0x" ? undefined : transformCode(bytecode);
 
-  const theme = useTheme();
   const [tooltipOpen, setTooltipOpen] = useState<boolean>(false);
 
   async function copyCode() {
@@ -136,6 +171,14 @@ export function Code({bytecode}: {bytecode: string}) {
     }
   });
 
+  // Always show code if sourceCode exists, with warnings when appropriate
+  const isVerified = verificationStatus?.verified === true;
+  const hasVerificationFailure = verificationStatus?.verified === false;
+  const hasVerificationDisabled = verificationError?.type === ResponseErrorType.SERVICE_UNAVAILABLE;
+  const hasVerificationUnavailable = verificationError?.type === ResponseErrorType.NOT_FOUND;
+  const hasCompilationError = verificationError?.type === ResponseErrorType.COMPILATION_ERROR;
+  const shouldShowCode = !!sourceCode;
+
   return (
     <Box>
       <Stack
@@ -154,7 +197,6 @@ export function Code({bytecode}: {bytecode: string}) {
           <Typography fontSize={20} fontWeight={700}>
             Code
           </Typography>
-          <StyledLearnMoreTooltip text="Please be aware that this code was provided by the owner and it could be different to the real code on blockchain. We cannot verify it." />
         </Stack>
         {sourceCode && (
           <Stack direction="row" spacing={2}>
@@ -196,44 +238,68 @@ export function Code({bytecode}: {bytecode: string}) {
           </Stack>
         )}
       </Stack>
-      {sourceCode && (
-        <Typography
-          variant="body1"
-          fontSize={14}
-          fontWeight={400}
-          marginBottom={"16px"}
-          color={theme.palette.mode === "dark" ? grey[400] : grey[600]}
+      {isVerificationLoading ? (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          padding={4}
         >
-          The source code is plain text uploaded by the deployer, which can be
-          different from the actual bytecode.
-        </Typography>
-      )}
-      {!sourceCode ? (
-        <Box>
-          Unfortunately, the source code cannot be shown because the package
-          publisher has chosen not to make it available
+          <CircularProgress size={24} />
+          <Typography marginLeft={2}>Verifying source code...</Typography>
         </Box>
+      ) : shouldShowCode ? (
+        <Stack spacing={1}>
+          {isVerified && (
+            <Alert severity="success">
+              Source code verified: the displayed code matches the deployed bytecode.
+            </Alert>
+          )}
+          {hasVerificationFailure && (
+            <Alert severity="error">
+              The deployer provided source code but it does not match the deployed bytecode. The displayed code may not accurately represent what is actually running on-chain.
+            </Alert>
+          )}
+          {hasCompilationError && (
+            <Alert severity="warning">
+              This contract cannot be verified because it uses dependencies that are not part of the standard Aptos framework. The displayed code was provided by the deployer and may not match the deployed bytecode.
+            </Alert>
+          )}
+          {(hasVerificationDisabled || hasVerificationUnavailable) && (
+            <Alert severity="info">
+              Source code verification is not available on this node. The displayed code was provided by the deployer and may not match the deployed bytecode.
+            </Alert>
+          )}
+          <Box
+            sx={{
+              maxHeight: "100vh",
+              overflow: "auto",
+              borderRadius: 0,
+              backgroundColor: codeBlockColor,
+            }}
+            ref={codeBoxScrollRef}
+          >
+            <SyntaxHighlighter
+              language="rust"
+              key={theme.palette.mode}
+              style={
+                theme.palette.mode === "light" ? solarizedLight : solarizedDark
+              }
+              customStyle={{margin: 0, backgroundColor: "unset"}}
+              showLineNumbers
+            >
+              {sourceCode}
+            </SyntaxHighlighter>
+          </Box>
+        </Stack>
       ) : (
         <Box
-          sx={{
-            maxHeight: "100vh",
-            overflow: "auto",
-            borderRadius: 0,
-            backgroundColor: codeBlockColor,
-          }}
-          ref={codeBoxScrollRef}
+          padding={2}
+          bgcolor={theme.palette.mode === "dark" ? grey[800] : grey[100]}
         >
-          <SyntaxHighlighter
-            language="rust"
-            key={theme.palette.mode}
-            style={
-              theme.palette.mode === "light" ? solarizedLight : solarizedDark
-            }
-            customStyle={{margin: 0, backgroundColor: "unset"}}
-            showLineNumbers
-          >
-            {sourceCode}
-          </SyntaxHighlighter>
+          <Typography color={grey[500]}>
+            The source code cannot be shown because the package publisher has chosen not to make it available.
+          </Typography>
         </Box>
       )}
     </Box>
