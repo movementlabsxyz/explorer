@@ -1,5 +1,5 @@
 import {useQuery} from "@tanstack/react-query";
-import {knownAddresses, NetworkName, scamAddresses} from "../../constants";
+import {NetworkName, scamAddresses} from "../../constants";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 import {
   fetchJsonResponse,
@@ -9,6 +9,7 @@ import {
 } from "../../utils";
 import {ResponseError} from "../client";
 import {NameType} from "../../components/TitleHashButton";
+import { useGetVerifiedAddresses } from "./useGetVerifiedAddresses";
 
 const TTL = 60000; // 1 minute
 
@@ -35,13 +36,14 @@ export function useGetNameFromAddress(
   nameType = NameType.ANY,
 ) {
   const [state] = useGlobalState();
+  const {data: verifiedAddresses} = useGetVerifiedAddresses();
   const queryResult = useQuery<string | null, ResponseError>({
-    queryKey: ["MNSName", address, shouldCache, state.network_name],
+    queryKey: ["MNSName", address, shouldCache, state.network_name, verifiedAddresses],
     queryFn: () => {
       const standardizedAddress = standardizeAddress(address);
       const lowercaseStandardizedAddress = standardizedAddress.toLowerCase();
       if (nameType !== NameType.ANS) {
-        const knownName = knownAddresses[lowercaseStandardizedAddress];
+        const knownName = verifiedAddresses?.[lowercaseStandardizedAddress];
         if (knownName) {
           return knownName;
         }
