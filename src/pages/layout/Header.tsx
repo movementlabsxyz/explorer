@@ -4,17 +4,16 @@ import MuiAppBar from "@mui/material/AppBar";
 import Container from "@mui/material/Container";
 import NetworkSelect from "./NetworkSelect";
 // import {useColorMode} from "../../context";
-import {useMediaQuery, useTheme} from "@mui/material";
+import {useMediaQuery, useTheme, IconButton} from "@mui/material";
 
-import LogoIconW from "../../assets/svg/logo_txt_w.svg?react";
-import LogoIconB from "../../assets/svg/logo_txt_b.svg?react";
+import MovementLogo from "../../assets/svg/movement-marigold.svg?react";
 import IconBell from "../../assets/svg/icon_bell.svg?react";
 import IconBellLight from "../../assets/svg/icon_bell_light.svg?react";
 
 import Box from "@mui/material/Box";
 import Nav from "./Nav";
 import NavMobile from "./NavMobile";
-import GlobalNavMenu from "./GlobalNavMenu";
+import {GlobalNavMenu} from "@moveindustries/movement-design-system";
 import {grey} from "../../themes/colors/aptosColorPalette";
 import {useInView} from "react-intersection-observer";
 import FeatureBar from "./FeatureBar";
@@ -199,6 +198,35 @@ function getHexSignatureFromSignMessageResponse(
   throw new Error("Unknown signature type");
 }
 
+// Custom Grid Icon for GlobalNavMenu trigger with gold hover
+const GridIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="3" y="3" width="5" height="5" rx="1" />
+    <rect x="10" y="3" width="5" height="5" rx="1" />
+    <rect x="17" y="3" width="5" height="5" rx="1" />
+    <rect x="3" y="10" width="5" height="5" rx="1" />
+    <rect x="10" y="10" width="5" height="5" rx="1" />
+    <rect x="17" y="10" width="5" height="5" rx="1" />
+    <rect x="3" y="17" width="5" height="5" rx="1" />
+    <rect x="10" y="17" width="5" height="5" rx="1" />
+    <rect x="17" y="17" width="5" height="5" rx="1" />
+  </svg>
+);
+
+const NavMenuTrigger = (
+  <IconButton
+    sx={{
+      color: "#fff",
+      "&:hover": {
+        color: "#FFDA34",
+        backgroundColor: "transparent",
+      },
+    }}
+  >
+    <GridIcon />
+  </IconButton>
+);
+
 export default function Header() {
   const scrollTop = () => {
     const docElement = document.documentElement;
@@ -306,7 +334,7 @@ export default function Header() {
           gap: 2,
         }}
       >
-        <GlobalNavMenu />
+        <GlobalNavMenu trigger={NavMenuTrigger} />
         <NetworkSelect />
         <NavMobile handleNotificationsClick={handleBellIconClick} />
       </Box>
@@ -357,15 +385,9 @@ export default function Header() {
                 marginRight: "auto",
               }}
             >
-              {theme.palette.mode === "dark" ? (
-                <LogoIconW
-                  style={{width: "100%", height: "auto", maxWidth: "221px"}}
-                />
-              ) : (
-                <LogoIconB
-                  style={{width: "100%", height: "auto", maxWidth: "221px"}}
-                />
-              )}
+              <MovementLogo
+                style={{width: "100%", height: "auto", maxWidth: "221px"}}
+              />
             </Link>
 
             <Nav />
@@ -466,7 +488,7 @@ export default function Header() {
               </Box>
             )}
 
-            {!isOnMobile && <GlobalNavMenu />}
+            {!isOnMobile && <GlobalNavMenu trigger={NavMenuTrigger} />}
           </Toolbar>
         </Container>
       </MuiAppBar>
