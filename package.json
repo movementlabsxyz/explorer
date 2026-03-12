@@ -62,7 +62,7 @@
   "scripts": {
     "start": "vite --port 3000",
     "dev": "vite --port 3000",
-    "build": "tsc --noEmit && cross-env NODE_OPTIONS=--max-old-space-size=6096 vite build",
+    "build": "tsc --noEmit && cross-env NODE_OPTIONS=--max-old-space-size=8192 vite build",
     "serve": "vite preview",
     "lint": "tsc --noEmit && eslint --report-unused-disable-directives --max-warnings 0",
     "fmt": "prettier --write '**/*.(js|jsx|ts|tsx|json|css|scss|md)'",
