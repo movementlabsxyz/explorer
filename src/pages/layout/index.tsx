@@ -3,7 +3,9 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Box from "@mui/material/Box";
 import Container from "@mui/material/Container";
 import Header from "./Header";
-import Footer from "./Footer";
+import {Footer} from "@moveindustries/movement-design-system";
+import "@moveindustries/movement-design-system/theme";
+import "@moveindustries/movement-design-system/component-styles";
 import {Fallback} from "./Fallback";
 import {
   GlobalStateProvider,

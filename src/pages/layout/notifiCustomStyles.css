@@ -579,3 +579,16 @@
   --notifi-button-text: var(--notifi-color-golden-yellow);
   --notifi-target-list-icon: var(--notifi-color-text);
 }
+
+/* GlobalNavMenu trigger hover color override */
+.global-nav-trigger:hover,
+.global-nav-trigger:hover svg,
+button.global-nav-trigger:hover {
+  color: #FFDA34 !important;
+  fill: #FFDA34 !important;
+}
+
+.global-nav-trigger:hover * {
+  color: #FFDA34 !important;
+  fill: #FFDA34 !important;
+}
