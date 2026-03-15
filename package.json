@@ -19,7 +19,7 @@
     "@bitget-wallet/aptos-wallet-adapter": "^0.1.2",
     "@blocto/aptos-wallet-adapter-plugin": "^0.2.11",
     "@download/blockies": "^1.0.3",
-    "@moveindustries/movement-design-system": "1.0.7",
+    "@moveindustries/movement-design-system": "1.1.4",
     "@martianwallet/aptos-wallet-adapter": "^0.0.5",
     "@msafe/aptos-wallet-adapter": "^1.1.8",
     "@mui/icons-material": "^6.4.3",
@@ -114,6 +114,8 @@
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-svgr": "^4.3.0",
-    "vitest": "^3.0.5"
+    "vitest": "^3.0.5",
+    "tailwindcss": "^4.1.0",
+    "@tailwindcss/vite": "^4.1.0"
   }
 }

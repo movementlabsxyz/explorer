@@ -1,5 +1,5 @@
 import {ThemeProvider} from "@mui/system";
-import React, {createContext, useContext} from "react";
+import React, {createContext, useContext, useEffect} from "react";
 import useProvideColorMode, {ColorModeContext} from "./ProvideColorMode.State";
 
 interface ProvideColorModeProps {
@@ -12,6 +12,12 @@ export const ProvideColorMode: React.FC<ProvideColorModeProps> = ({
   children,
 }: ProvideColorModeProps) => {
   const {toggleColorMode, theme} = useProvideColorMode();
+
+  // Sync dark class for design system components (Tailwind CSS)
+  useEffect(() => {
+    const isDark = theme.palette.mode === "dark";
+    document.documentElement.classList.toggle("dark", isDark);
+  }, [theme.palette.mode]);
 
   return (
     <colorModeContext.Provider value={{toggleColorMode}}>
