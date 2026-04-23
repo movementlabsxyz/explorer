@@ -13,15 +13,15 @@ export const bardockTestnetUrl =
   import.meta.env.MOVEMENT_TESTNET_URL ||
   `https://testnet.movementnetwork.xyz/v1`;
 
-  export const networks = {
-    mainnet: mainnetUrl,
-    testnet: "",
-    "bardock testnet": bardockTestnetUrl,
+export const networks = {
+  mainnet: mainnetUrl,
+  testnet: "",
+  "bardock testnet": bardockTestnetUrl,
   devnet: "",
-    local: "http://localhost:30731",
-    mevmdevnet: "",
-    custom: "",
-  };
+  local: "http://127.0.0.1:8080",
+  mevmdevnet: "",
+  custom: "",
+};
 
 export const availableNetworks = ["mainnet", "bardock testnet"];
 
