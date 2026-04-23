@@ -30,7 +30,7 @@ export default function UserTransactionsPreview() {
             component={RRD.Link}
             to={augmentTo("/transactions")}
             variant="primary"
-            sx={{margin: "0 auto", mt: 3}}
+            sx={{margin: "0 auto", mt: 3, "&:hover": {opacity: "0.8"}}}
           >
             View all Transactions
           </Button>
