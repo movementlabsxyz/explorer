@@ -52,7 +52,7 @@ export function HoldersTable({
       <GeneralTableBody>
         {holders.map((holder, i) => {
           return (
-            <GeneralTableRow>
+            <GeneralTableRow key={`${i}-${holder.owner_address}`}>
               <GeneralTableCell>{i}</GeneralTableCell>
               <GeneralTableCell>
                 <HashButton
@@ -62,7 +62,7 @@ export function HoldersTable({
               </GeneralTableCell>
               <GeneralTableCell align={"right"}>
                 {getFormattedBalanceStr(
-                  holder.amount_v2.toString(),
+                  (holder.amount ?? 0).toString(),
                   data.data.decimals,
                 ) +
                   " " +

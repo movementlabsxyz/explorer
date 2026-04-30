@@ -3,7 +3,7 @@ import {ApolloError, gql} from "@apollo/client";
 
 export type CoinHolder = {
   owner_address: string;
-  amount_v2: number;
+  amount: number | string | null;
 };
 
 export function useGetCoinHolders(
@@ -20,13 +20,13 @@ export function useGetCoinHolders(
     gql`
       query GetFungibleAssetBalances($coin_type: String!, $offset: Int!) {
         current_fungible_asset_balances(
-          where: {asset_type: {_eq: $coin_type}}
+          where: {asset_type: {_eq: $coin_type}, amount: {_is_null: false}}
           limit: 100
           offset: $offset
-          order_by: {amount_v2: desc}
+          order_by: {amount: desc_nulls_last}
         ) {
           owner_address
-          amount_v2
+          amount
         }
       }
     `,
@@ -36,6 +36,8 @@ export function useGetCoinHolders(
   return {
     isLoading: loading,
     error,
-    data: data?.current_fungible_asset_balances,
+    data: data?.current_fungible_asset_balances?.filter(
+      (h) => h.amount !== null && h.amount !== undefined,
+    ),
   };
 }
