@@ -9,21 +9,20 @@ const prefix = import.meta.env.REACT_APP_PREFIX || "";
 export const mainnetUrl =
   import.meta.env.MAINNET_URL || `https://mainnet.movementnetwork.xyz/v1`;
 
-export const bardockTestnetUrl =
+export const testnetUrl =
   import.meta.env.MOVEMENT_TESTNET_URL ||
   `https://testnet.movementnetwork.xyz/v1`;
 
-  export const networks = {
-    mainnet: mainnetUrl,
-    testnet: "",
-    "bardock testnet": bardockTestnetUrl,
+export const networks = {
+  mainnet: mainnetUrl,
+  testnet: testnetUrl,
   devnet: "",
-    local: "http://localhost:30731",
-    mevmdevnet: "",
-    custom: "",
-  };
+  local: "http://localhost:30731",
+  mevmdevnet: "",
+  custom: "",
+};
 
-export const availableNetworks = ["mainnet", "bardock testnet"];
+export const availableNetworks = ["mainnet", "testnet"];
 
 export type NetworkName = keyof typeof networks;
 
@@ -36,7 +35,6 @@ type ApiKeys = {
  */
 const apiKeys: ApiKeys = {
   mainnet: undefined,
-  "bardock testnet": undefined,
   testnet: undefined,
   devnet: undefined,
   local: undefined,
@@ -54,7 +52,6 @@ export function isValidNetworkName(value: string): value is NetworkName {
 
 export enum Network {
   MAINNET = "mainnet",
-  BARDOCK_TESTNET = "bardock-testnet",
   TESTNET = "testnet",
   DEVNET = "devnet",
   LOCAL = "local",

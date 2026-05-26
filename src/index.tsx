@@ -22,6 +22,19 @@ initGTM({
 
 ReactGA.initialize(import.meta.env.GA_TRACKING_ID || "G-VS7KJG61TM");
 
+// Rewrite legacy "bardock testnet" network param to "testnet" before React boots.
+{
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("network") === "bardock testnet") {
+    params.set("network", "testnet");
+    window.history.replaceState(
+      null,
+      "",
+      `${window.location.pathname}?${params.toString()}${window.location.hash}`,
+    );
+  }
+}
+
 // TODO: redirect to the new explorer domain on the domain host
 // if (window.location.origin.includes("explorer.testnet.suzuka.movementlabs.xyz")) {
 //   const new_location = window.location.href.replace(

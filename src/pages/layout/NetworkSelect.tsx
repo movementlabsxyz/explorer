@@ -39,17 +39,6 @@ export const getCustomParameters = () => {
   };
 };
 
-export const getDisplayNetworkName = (networkName: string): string => {
-  if (networkName === "testnet") {
-    return "porto testnet";
-  } else if (networkName === "bardockTestnet") {
-    return "bardock testnet";
-  } else if (networkName === "mainnet") {
-    return "mainnet beta";
-  }
-  return networkName;
-};
-
 function NetworkAndChainIdCached({
   networkName,
   chainId,
@@ -68,7 +57,7 @@ function NetworkAndChainIdCached({
       width="100%"
       paddingY={0.75}
     >
-      <Typography>{getDisplayNetworkName(networkName)}</Typography>
+      <Typography>{networkName}</Typography>
       <Typography variant="body2" sx={{color: theme.palette.text.disabled}}>
         {chainId}
       </Typography>
@@ -160,7 +149,7 @@ export default function NetworkSelect() {
           value={state.network_name}
           onChange={handleChange}
           renderValue={(value) => (
-            <Typography>{getDisplayNetworkName(value)}</Typography>
+            <Typography>{value}</Typography>
           )}
           onClose={() => {
             setTimeout(() => {

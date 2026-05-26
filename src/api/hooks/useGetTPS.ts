@@ -6,7 +6,7 @@ import {useGetTPSByBlockHeight} from "./useGetTPSByBlockHeight";
 import {
   AnalyticsData,
   ANALYTICS_DATA_URL,
-  BARDOCK_ANALYTICS_DATA_URL,
+  TESTNET_ANALYTICS_DATA_URL,
 } from "./useGetAnalyticsData";
 import {availableNetworks} from "../../constants";
 
@@ -41,8 +41,8 @@ export function useGetPeakTPS() {
       const fetchData = async () => {
         let ANALYTICS_DATA_URL_USE;
         switch (state.network_name) {
-          case "bardock testnet":
-            ANALYTICS_DATA_URL_USE = BARDOCK_ANALYTICS_DATA_URL;
+          case "testnet":
+            ANALYTICS_DATA_URL_USE = TESTNET_ANALYTICS_DATA_URL;
             break;
           default:
             ANALYTICS_DATA_URL_USE = ANALYTICS_DATA_URL;

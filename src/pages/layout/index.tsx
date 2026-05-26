@@ -130,7 +130,7 @@ function NetworkStatusWrapper({children}: LayoutProps) {
   
   return (
     <>
-      <NetworkStatus componentName={state.network_name === "mainnet" ? "MAINNET BETA" : "BARDOCK TESTNET"} />
+      <NetworkStatus componentName={state.network_name === "mainnet" ? "MAINNET" : "TESTNET"} />
       {children}
     </>
   );

@@ -1,7 +1,7 @@
 import {useEffect, useState} from "react";
 import {useGlobalState} from "../../global-config/GlobalConfig";
 
-export const BARDOCK_ANALYTICS_DATA_URL =
+export const TESTNET_ANALYTICS_DATA_URL =
   "https://storage.googleapis.com/explorer_stats/chain_stats_testnet_v2.json";
 
 export const ANALYTICS_DATA_URL =
@@ -101,8 +101,7 @@ export function useGetAnalyticsData() {
 
   useEffect(() => {
     const options = {
-      "bardock testnet": BARDOCK_ANALYTICS_DATA_URL,
-      testnet: null,
+      testnet: TESTNET_ANALYTICS_DATA_URL,
       mainnet: ANALYTICS_DATA_URL,
       devnet: null,
       local: null,
