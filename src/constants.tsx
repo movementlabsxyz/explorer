@@ -13,15 +13,14 @@ export const testnetUrl =
   import.meta.env.MOVEMENT_TESTNET_URL ||
   `https://testnet.movementnetwork.xyz/v1`;
 
-  export const networks = {
-    mainnet: mainnetUrl,
-    testnet: "",
-    "testnet": testnetUrl,
+export const networks = {
+  mainnet: mainnetUrl,
+  testnet: testnetUrl,
   devnet: "",
-    local: "http://localhost:30731",
-    mevmdevnet: "",
-    custom: "",
-  };
+  local: "http://localhost:30731",
+  mevmdevnet: "",
+  custom: "",
+};
 
 export const availableNetworks = ["mainnet", "testnet"];
 
