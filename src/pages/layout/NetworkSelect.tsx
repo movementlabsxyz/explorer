@@ -41,11 +41,9 @@ export const getCustomParameters = () => {
 
 export const getDisplayNetworkName = (networkName: string): string => {
   if (networkName === "testnet") {
-    return "porto testnet";
-  } else if (networkName === "bardockTestnet") {
-    return "bardock testnet";
+    return "testnet";
   } else if (networkName === "mainnet") {
-    return "mainnet beta";
+    return "mainnet";
   }
   return networkName;
 };

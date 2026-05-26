@@ -64,9 +64,9 @@ export function useNetworkSelector() {
     () => {
       const currentNetworkSearchParam = searchParams.get("network");
 
-      // Redirect testnet to bardock testnet (testnet is valid but has no URL)
+      // Redirect testnet to testnet (testnet is valid but has no URL)
       if (currentNetworkSearchParam === "testnet") {
-        selectNetwork("bardock testnet", {replace: true});
+        selectNetwork("testnet", {replace: true});
         return;
       }
 
